@@ -9,6 +9,7 @@ settings:
     SWIFT_VERSION: "5.9"
     MACOSX_DEPLOYMENT_TARGET: "13.0"
     ALWAYS_SEARCH_USER_PATHS: NO
+    CONFIGURATION_BUILD_DIR: $(SRCROOT)/build/$(CONFIGURATION)
 targets:
   MetalPOC:
     type: application
