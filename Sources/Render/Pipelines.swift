@@ -3,6 +3,7 @@ import Metal
 final class Pipelines {
     let ornament: MTLRenderPipelineState
     let orb: MTLRenderPipelineState
+    let widget: MTLRenderPipelineState
 
     init(device: MTLDevice, library: MTLLibrary, colorPixelFormat: MTLPixelFormat) throws {
         self.ornament = try Pipelines.makePipeline(
@@ -14,6 +15,11 @@ final class Pipelines {
             device: device, library: library, colorPixelFormat: colorPixelFormat,
             vertexFunctionName: "orb_vertex", fragmentFunctionName: "orb_fragment",
             label: "OrbPipeline")
+
+        self.widget = try Pipelines.makePipeline(
+            device: device, library: library, colorPixelFormat: colorPixelFormat,
+            vertexFunctionName: "widget_vertex", fragmentFunctionName: "widget_fragment",
+            label: "WidgetPipeline")
     }
 
     static func makePipeline(
