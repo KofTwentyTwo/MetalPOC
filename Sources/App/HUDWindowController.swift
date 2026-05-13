@@ -13,7 +13,8 @@ final class HUDWindowController: NSWindowController {
         hudView.renderer.scene = [
             OrnamentElement(),
             OrbElement(),
-            KPIClusterWidget()
+            KPIClusterWidget(),
+            LLMTelemetryWidget()
         ]
     }
 
