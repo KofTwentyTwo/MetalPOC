@@ -14,7 +14,8 @@ final class HUDWindowController: NSWindowController {
             OrnamentElement(),
             OrbElement(),
             KPIClusterWidget(),
-            LLMTelemetryWidget()
+            LLMTelemetryWidget(),
+            WorldClocksWidget()
         ]
     }
 
