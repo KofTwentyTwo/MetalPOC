@@ -11,7 +11,8 @@ final class HUDWindowController: NSWindowController {
         super.init(window: hudWindow)
 
         hudView.renderer.scene = [
-            OrnamentElement()
+            OrnamentElement(),
+            OrbElement()
         ]
     }
 

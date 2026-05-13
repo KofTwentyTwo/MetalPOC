@@ -2,16 +2,18 @@ import Metal
 
 final class Pipelines {
     let ornament: MTLRenderPipelineState
+    let orb: MTLRenderPipelineState
 
     init(device: MTLDevice, library: MTLLibrary, colorPixelFormat: MTLPixelFormat) throws {
         self.ornament = try Pipelines.makePipeline(
-            device: device,
-            library: library,
-            colorPixelFormat: colorPixelFormat,
-            vertexFunctionName: "ornament_vertex",
-            fragmentFunctionName: "ornament_fragment",
-            label: "OrnamentPipeline"
-        )
+            device: device, library: library, colorPixelFormat: colorPixelFormat,
+            vertexFunctionName: "ornament_vertex", fragmentFunctionName: "ornament_fragment",
+            label: "OrnamentPipeline")
+
+        self.orb = try Pipelines.makePipeline(
+            device: device, library: library, colorPixelFormat: colorPixelFormat,
+            vertexFunctionName: "orb_vertex", fragmentFunctionName: "orb_fragment",
+            label: "OrbPipeline")
     }
 
     static func makePipeline(
