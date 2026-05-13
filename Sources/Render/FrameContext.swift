@@ -8,4 +8,5 @@ struct FrameContext {
     let scaleFactor: Float
     let device: MTLDevice
     let pipelines: Pipelines
+    let textRasterizer: TextRasterizer
 }

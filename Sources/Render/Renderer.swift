@@ -7,6 +7,7 @@ final class Renderer: NSObject, MTKViewDelegate {
     private let device: MTLDevice
     private let queue: MTLCommandQueue
     private let pipelines: Pipelines
+    private let textRasterizer: TextRasterizer
     private let startTime: CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
     private var lastFrameTime: CFAbsoluteTime
 
@@ -28,6 +29,7 @@ final class Renderer: NSObject, MTKViewDelegate {
         }
         self.device = device
         self.queue = queue
+        self.textRasterizer = TextRasterizer(device: device)
         self.lastFrameTime = CFAbsoluteTimeGetCurrent()
     }
 
@@ -44,7 +46,8 @@ final class Renderer: NSObject, MTKViewDelegate {
             resolution: SIMD2<Float>(Float(view.drawableSize.width), Float(view.drawableSize.height)),
             scaleFactor: Float(view.window?.backingScaleFactor ?? 1.0),
             device: device,
-            pipelines: pipelines
+            pipelines: pipelines,
+            textRasterizer: textRasterizer
         )
 
         for element in scene {
