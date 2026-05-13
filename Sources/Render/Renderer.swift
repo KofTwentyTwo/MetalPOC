@@ -6,12 +6,24 @@ final class Renderer: NSObject, MTKViewDelegate {
 
     private let device: MTLDevice
     private let queue: MTLCommandQueue
+    private let pipelines: Pipelines
     private let startTime: CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
     private var lastFrameTime: CFAbsoluteTime
 
     init?(view: MTKView) {
         guard let device = view.device,
-              let queue = device.makeCommandQueue() else {
+              let queue = device.makeCommandQueue(),
+              let library = device.makeDefaultLibrary() else {
+            return nil
+        }
+        do {
+            self.pipelines = try Pipelines(
+                device: device,
+                library: library,
+                colorPixelFormat: view.colorPixelFormat
+            )
+        } catch {
+            print("Failed to build pipelines: \(error)")
             return nil
         }
         self.device = device
@@ -31,7 +43,8 @@ final class Renderer: NSObject, MTKViewDelegate {
             deltaTime: deltaTime,
             resolution: SIMD2<Float>(Float(view.drawableSize.width), Float(view.drawableSize.height)),
             scaleFactor: Float(view.window?.backingScaleFactor ?? 1.0),
-            device: device
+            device: device,
+            pipelines: pipelines
         )
 
         for element in scene {

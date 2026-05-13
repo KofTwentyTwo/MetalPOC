@@ -9,6 +9,10 @@ final class HUDWindowController: NSWindowController {
         self.hudView = HUDView(frame: NSRect(origin: .zero, size: screenFrame.size))
         self.hudWindow = HUDWindow(contentView: hudView)
         super.init(window: hudWindow)
+
+        hudView.renderer.scene = [
+            OrnamentElement()
+        ]
     }
 
     required init?(coder: NSCoder) {

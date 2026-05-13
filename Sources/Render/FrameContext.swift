@@ -1,11 +1,11 @@
 import Metal
 import simd
 
-/// Per-frame argument bundle handed to every `HUDElement` during `update` and `encode`.
 struct FrameContext {
-    let time: Float            // seconds since renderer start
-    let deltaTime: Float       // seconds since last frame
-    let resolution: SIMD2<Float>   // drawable size in pixels
-    let scaleFactor: Float          // backing scale (1 on non-Retina, 2 on Retina)
+    let time: Float
+    let deltaTime: Float
+    let resolution: SIMD2<Float>
+    let scaleFactor: Float
     let device: MTLDevice
+    let pipelines: Pipelines
 }
