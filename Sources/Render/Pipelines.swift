@@ -5,6 +5,7 @@ final class Pipelines {
     let orb: MTLRenderPipelineState
     let widget: MTLRenderPipelineState
     let vitals: MTLRenderPipelineState
+    let spectrum: MTLRenderPipelineState
 
     init(device: MTLDevice, library: MTLLibrary, colorPixelFormat: MTLPixelFormat) throws {
         self.ornament = try Pipelines.makePipeline(
@@ -26,6 +27,11 @@ final class Pipelines {
             device: device, library: library, colorPixelFormat: colorPixelFormat,
             vertexFunctionName: "vitals_vertex", fragmentFunctionName: "vitals_fragment",
             label: "VitalsPipeline")
+
+        self.spectrum = try Pipelines.makePipeline(
+            device: device, library: library, colorPixelFormat: colorPixelFormat,
+            vertexFunctionName: "spectrum_vertex", fragmentFunctionName: "spectrum_fragment",
+            label: "SpectrumPipeline")
     }
 
     static func makePipeline(
