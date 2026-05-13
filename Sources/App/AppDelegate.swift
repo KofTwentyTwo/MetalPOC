@@ -2,9 +2,15 @@ import Cocoa
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: StatusItemController?
+    private var hudController: HUDWindowController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        statusItem = StatusItemController()
-        // statusItem!.onToggle = { … } wired up when HUDWindowController exists (Task 3)
+        let hud = HUDWindowController()
+        hudController = hud
+        hud.showWindow(nil)
+
+        let status = StatusItemController()
+        status.onToggle = { [weak hud] in hud?.toggleVisibility() }
+        statusItem = status
     }
 }
