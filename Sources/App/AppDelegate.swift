@@ -1,7 +1,10 @@
 import Cocoa
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    private var statusItem: StatusItemController?
+
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Intentionally empty for Task 1. Window and status bar arrive in later tasks.
+        statusItem = StatusItemController()
+        // statusItem!.onToggle = { … } wired up when HUDWindowController exists (Task 3)
     }
 }
