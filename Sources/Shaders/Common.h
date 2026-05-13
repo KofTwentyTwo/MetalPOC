@@ -1,4 +1,9 @@
 #pragma once
+
+// Wrapped in __METAL_VERSION__ so clang's indexer (which sees this as a C/C++ header)
+// stays quiet. The Metal compiler defines __METAL_VERSION__ and gets the full content.
+#ifdef __METAL_VERSION__
+
 #include <metal_stdlib>
 using namespace metal;
 
@@ -31,3 +36,5 @@ inline float sdRing(float2 p, float r, float w) {
 // Standard Jarvis palette.
 constant float3 kCyan       = float3(0.20, 0.85, 1.00);
 constant float3 kBrightCyan = float3(0.55, 0.95, 1.00);
+
+#endif // __METAL_VERSION__
