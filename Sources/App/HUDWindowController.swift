@@ -19,7 +19,8 @@ final class HUDWindowController: NSWindowController {
             LogStreamWidget(),
             TaskListWidget(),
             CompassWidget(),
-            ScheduleStripWidget()
+            ScheduleStripWidget(),
+            StatusTickerWidget()
         ]
     }
 
