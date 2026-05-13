@@ -17,7 +17,8 @@ final class HUDWindowController: NSWindowController {
             LLMTelemetryWidget(),
             WorldClocksWidget(),
             LogStreamWidget(),
-            TaskListWidget()
+            TaskListWidget(),
+            CompassWidget()
         ]
     }
 
