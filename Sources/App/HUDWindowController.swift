@@ -2,14 +2,12 @@ import Cocoa
 
 final class HUDWindowController: NSWindowController {
     private let hudWindow: HUDWindow
+    private let hudView: HUDView
 
     init() {
-        // Temporary tinted placeholder content for Task 3. Replaced by HUDView in Task 4.
-        let placeholder = NSView()
-        placeholder.wantsLayer = true
-        placeholder.layer?.backgroundColor = NSColor.clear.cgColor
-
-        self.hudWindow = HUDWindow(contentView: placeholder)
+        let screenFrame = (NSScreen.main ?? NSScreen.screens.first!).frame
+        self.hudView = HUDView(frame: NSRect(origin: .zero, size: screenFrame.size))
+        self.hudWindow = HUDWindow(contentView: hudView)
         super.init(window: hudWindow)
     }
 
