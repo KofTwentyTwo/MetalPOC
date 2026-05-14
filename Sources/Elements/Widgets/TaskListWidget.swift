@@ -72,9 +72,16 @@ final class TaskListWidget: HUDElement {
     private var lastRenderedSecondTick: Int = -1
 
     private func shuffleStatus() {
+        // 50% chance: revive a DONE task back to PENDING
+        if Bool.random() {
+            if let doneIdx = tasks.indices.filter({ tasks[$0].status == "DONE" }).randomElement() {
+                tasks[doneIdx].status = "PENDING"
+                tasks[doneIdx].progress = 0
+            }
+        }
+        // Existing logic (PENDING↔BLOCKED swap)
         guard let pending = tasks.indices.filter({ tasks[$0].status == "PENDING" }).randomElement(),
               let blocked = tasks.indices.filter({ tasks[$0].status == "BLOCKED" }).randomElement() else { return }
-        // Occasionally unblock and pull from pending to blocked.
         if Bool.random() {
             tasks[blocked].status = "PENDING"
             tasks[pending].status = "BLOCKED"
