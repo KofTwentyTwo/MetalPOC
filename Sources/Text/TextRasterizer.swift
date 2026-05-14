@@ -38,8 +38,20 @@ final class TextRasterizer {
         context.setShouldAntialias(true)
         context.setShouldSmoothFonts(true)
 
+        // Inset the text region so glyphs sit clearly inside the widget's chamfered
+        // frame (10% chamfer at TL + BR). Inset is 10% of the smaller widget dimension,
+        // clamped to [4, 40] pt — gives breathing room without crowding small widgets.
+        let dim = min(maxSize.width, maxSize.height)
+        let inset = max(4.0, min(40.0, dim * 0.10))
         let framesetter = CTFramesetterCreateWithAttributedString(string)
-        let path = CGPath(rect: CGRect(origin: .zero, size: maxSize), transform: nil)
+        let path = CGPath(
+            rect: CGRect(
+                x: inset, y: inset,
+                width: max(maxSize.width - 2 * inset, 1),
+                height: max(maxSize.height - 2 * inset, 1)
+            ),
+            transform: nil
+        )
         let frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, nil)
         // CoreText draws in a y-up coordinate system. The CGContext defaults to y-up too
         // after we've set no extra transforms, but we need to ensure the frame draws into
@@ -99,8 +111,20 @@ final class TextRasterizer {
         context.setShouldAntialias(true)
         context.setShouldSmoothFonts(true)
 
+        // Inset the text region so glyphs sit clearly inside the widget's chamfered
+        // frame (10% chamfer at TL + BR). Inset is 10% of the smaller widget dimension,
+        // clamped to [4, 40] pt — gives breathing room without crowding small widgets.
+        let dim = min(maxSize.width, maxSize.height)
+        let inset = max(4.0, min(40.0, dim * 0.10))
         let framesetter = CTFramesetterCreateWithAttributedString(string)
-        let path = CGPath(rect: CGRect(origin: .zero, size: maxSize), transform: nil)
+        let path = CGPath(
+            rect: CGRect(
+                x: inset, y: inset,
+                width: max(maxSize.width - 2 * inset, 1),
+                height: max(maxSize.height - 2 * inset, 1)
+            ),
+            transform: nil
+        )
         let frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, nil)
         context.translateBy(x: 0, y: maxSize.height)
         context.scaleBy(x: 1, y: -1)

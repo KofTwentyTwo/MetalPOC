@@ -64,10 +64,10 @@ fragment float4 widget_fragment(WidgetVertexOut in [[stage_in]],
 
     float dBox = sdBox(px, half_);
 
-    // Chamfer TL and BR corners at 45°. notchSize = 4% of the smaller half — small
-    // enough that it doesn't intrude into the title-text area, which is what made the
-    // text look like it was "outside" the frame at the previous 10% setting.
-    float notchSize = min(half_.x, half_.y) * 0.04;
+    // Chamfer TL and BR corners at 45°. notchSize = 10% of the smaller half.
+    // Text content stays clear of the chamfered region via inset padding in the
+    // TextRasterizer (~10% of the widget's smaller dimension).
+    float notchSize = min(half_.x, half_.y) * 0.10;
 
     // Top-left chamfer: the corner where px.x ~ -half_.x AND px.y ~ +half_.y
     // Cut plane: a diagonal line whose normal points into (1, -1) direction
@@ -132,7 +132,9 @@ fragment float4 widget_fragment(WidgetVertexOut in [[stage_in]],
     // was being read as a false "top of the box" with title text appearing above it).
     // -------------------------------------------------------------------------
     if (interiorMask > 0.5) {
-        float2 ledPos = float2(0.035, 0.91);
+        // LED sits inside the chamfered shape, offset enough from the TL corner to
+        // clear the 10% notch on all widget aspect ratios.
+        float2 ledPos = float2(0.08, 0.85);
         float ledRadius = 0.012;
         float widgetAspect = (u.size.x * u.resolution.x) / (u.size.y * u.resolution.y);
         float2 ledDelta = (in.uv - ledPos) * float2(widgetAspect, 1.0);
