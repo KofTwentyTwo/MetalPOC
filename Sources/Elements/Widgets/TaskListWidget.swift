@@ -85,13 +85,13 @@ final class TaskListWidget: HUDElement {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
 
-        let font = NSFont.monospacedSystemFont(ofSize: 11, weight: .regular)
+        let font = NSFont(name: "ShareTechMono-Regular", size: 11) ?? NSFont.monospacedSystemFont(ofSize: 11, weight: .regular)
         let paragraph = NSMutableParagraphStyle()
         paragraph.lineSpacing = 3
 
         let attributed = NSMutableAttributedString()
         let header: [NSAttributedString.Key: Any] = [
-            .font: NSFont.monospacedSystemFont(ofSize: 12, weight: .bold),
+            .font: NSFont(name: "Orbitron-Bold", size: 13) ?? NSFont.monospacedSystemFont(ofSize: 13, weight: .bold),
             .foregroundColor: NSColor.white,
             .paragraphStyle: paragraph
         ]

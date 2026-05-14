@@ -66,12 +66,18 @@ final class KPIClusterWidget: HUDElement {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
 
-        let font = NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)
+        let bodyFont = NSFont(name: "ShareTechMono-Regular", size: 12) ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)
+        let titleFont = NSFont(name: "Orbitron-Bold", size: 13) ?? NSFont.monospacedSystemFont(ofSize: 13, weight: .bold)
         let paragraph = NSMutableParagraphStyle()
         paragraph.lineSpacing = 2
 
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: font,
+        let titleAttrs: [NSAttributedString.Key: Any] = [
+            .font: titleFont,
+            .foregroundColor: NSColor.white,
+            .paragraphStyle: paragraph
+        ]
+        let bodyAttrs: [NSAttributedString.Key: Any] = [
+            .font: bodyFont,
             .foregroundColor: NSColor.white,
             .paragraphStyle: paragraph
         ]
@@ -79,8 +85,9 @@ final class KPIClusterWidget: HUDElement {
             let bar = barGauge(kpi.value, max: 100)
             return String(format: "%@  %@  %5.1f%@", kpi.label, bar, kpi.value, kpi.unit)
         }
-        let text = "[ SYS KPI ]\n" + lines.joined(separator: "\n")
-        let attributed = NSAttributedString(string: text, attributes: attributes)
+        let attributed = NSMutableAttributedString()
+        attributed.append(NSAttributedString(string: "[ SYS KPI ]\n", attributes: titleAttrs))
+        attributed.append(NSAttributedString(string: lines.joined(separator: "\n"), attributes: bodyAttrs))
 
         textTexture = context.textRasterizer.rasterize(
             attributed,

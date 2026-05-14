@@ -16,6 +16,9 @@ targets:
     platform: macOS
     sources:
       - path: Sources
+    resources:
+      - path: Sources/Resources/Fonts
+        buildPhase: resources
     info:
       path: Sources/Info.plist
       properties:
@@ -30,6 +33,7 @@ targets:
         NSHighResolutionCapable: true
         NSPrincipalClass: NSApplication
         LSUIElement: true
+        ATSApplicationFontsPath: ""
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.dmdbrands.MetalPOC

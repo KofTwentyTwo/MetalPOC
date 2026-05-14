@@ -50,9 +50,13 @@ final class CompassWidget: HUDElement {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
 
-        let font = NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: font, .foregroundColor: NSColor.white
+        let bodyFont  = NSFont(name: "ShareTechMono-Regular", size: 12) ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)
+        let titleFont = NSFont(name: "Orbitron-Bold", size: 13) ?? NSFont.monospacedSystemFont(ofSize: 13, weight: .bold)
+        let titleAttrs: [NSAttributedString.Key: Any] = [
+            .font: titleFont, .foregroundColor: NSColor.white
+        ]
+        let bodyAttrs: [NSAttributedString.Key: Any] = [
+            .font: bodyFont, .foregroundColor: NSColor.white
         ]
         // Build a "tape" of bearings centered on the current heading: show 9 segments,
         // each 10° apart, with the center highlighted.
@@ -65,12 +69,10 @@ final class CompassWidget: HUDElement {
             let mark = (offset == 0) ? "▼" : "·"
             tape += "\(mark)\(String(format: "%03d", deg)) "
         }
-        let text = """
-        [ HEADING ]
-        \(String(format: "%05.1f° %@", headingDeg, cardinal(for: headingDeg)))
-        \(tape.trimmingCharacters(in: .whitespaces))
-        """
-        let attributed = NSAttributedString(string: text, attributes: attributes)
+        let bodyText = "\(String(format: "%05.1f° %@", headingDeg, cardinal(for: headingDeg)))\n\(tape.trimmingCharacters(in: .whitespaces))"
+        let attributed = NSMutableAttributedString()
+        attributed.append(NSAttributedString(string: "[ HEADING ]\n", attributes: titleAttrs))
+        attributed.append(NSAttributedString(string: bodyText, attributes: bodyAttrs))
 
         textTexture = context.textRasterizer.rasterize(
             attributed,

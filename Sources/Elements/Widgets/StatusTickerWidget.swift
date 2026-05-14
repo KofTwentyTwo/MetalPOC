@@ -61,7 +61,7 @@ final class StatusTickerWidget: HUDElement {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
 
-        let font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+        let font = NSFont(name: "ShareTechMono-Regular", size: 12) ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
         let attrs: [NSAttributedString.Key: Any] = [
             .font: font, .foregroundColor: NSColor.white
         ]

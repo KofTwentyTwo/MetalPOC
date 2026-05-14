@@ -67,14 +67,17 @@ final class LLMTelemetryWidget: HUDElement {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
 
-        let font = NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: font, .foregroundColor: NSColor.white
+        let bodyFont  = NSFont(name: "ShareTechMono-Regular", size: 12) ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)
+        let titleFont = NSFont(name: "Orbitron-Bold", size: 13) ?? NSFont.monospacedSystemFont(ofSize: 13, weight: .bold)
+        let titleAttrs: [NSAttributedString.Key: Any] = [
+            .font: titleFont, .foregroundColor: NSColor.white
+        ]
+        let bodyAttrs: [NSAttributedString.Key: Any] = [
+            .font: bodyFont, .foregroundColor: NSColor.white
         ]
 
         let ctxPct = (contextUsed / contextMax) * 100
-        let text = """
-        [ LLM TELEMETRY ]
+        let body = """
         TOK/S    \(String(format: "%5.1f", tokensPerSec))
         CTX      \(barGauge(contextUsed / contextMax)) \(String(format: "%.1f", ctxPct))%
         COST     $\(String(format: "%.4f", cumulativeCost))
@@ -82,7 +85,9 @@ final class LLMTelemetryWidget: HUDElement {
         MODEL    \(models[modelIndex])
         """
 
-        let attributed = NSAttributedString(string: text, attributes: attributes)
+        let attributed = NSMutableAttributedString()
+        attributed.append(NSAttributedString(string: "[ LLM TELEMETRY ]\n", attributes: titleAttrs))
+        attributed.append(NSAttributedString(string: body, attributes: bodyAttrs))
         textTexture = context.textRasterizer.rasterize(
             attributed,
             maxSize: CGSize(width: widthPts, height: heightPts),

@@ -50,9 +50,13 @@ final class WorldClocksWidget: HUDElement {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
 
-        let font = NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: font, .foregroundColor: NSColor.white
+        let bodyFont  = NSFont(name: "ShareTechMono-Regular", size: 12) ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)
+        let titleFont = NSFont(name: "Orbitron-Bold", size: 13) ?? NSFont.monospacedSystemFont(ofSize: 13, weight: .bold)
+        let titleAttrs: [NSAttributedString.Key: Any] = [
+            .font: titleFont, .foregroundColor: NSColor.white
+        ]
+        let bodyAttrs: [NSAttributedString.Key: Any] = [
+            .font: bodyFont, .foregroundColor: NSColor.white
         ]
 
         let formatter = DateFormatter()
@@ -62,8 +66,9 @@ final class WorldClocksWidget: HUDElement {
             formatter.timeZone = TimeZone(identifier: c.timeZoneID) ?? .current
             return "\(c.label) \(formatter.string(from: now))"
         }
-        let text = "[ WORLD CLOCKS ]\n" + parts.joined(separator: "   ")
-        let attributed = NSAttributedString(string: text, attributes: attributes)
+        let attributed = NSMutableAttributedString()
+        attributed.append(NSAttributedString(string: "[ WORLD CLOCKS ]\n", attributes: titleAttrs))
+        attributed.append(NSAttributedString(string: parts.joined(separator: "   "), attributes: bodyAttrs))
 
         textTexture = context.textRasterizer.rasterize(
             attributed,

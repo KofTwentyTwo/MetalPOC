@@ -67,7 +67,7 @@ final class ScheduleStripWidget: HUDElement {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
 
-        let font = NSFont.monospacedSystemFont(ofSize: 13, weight: .medium)
+        let font = NSFont(name: "ShareTechMono-Regular", size: 13) ?? NSFont.monospacedSystemFont(ofSize: 13, weight: .medium)
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
         let attributed = NSMutableAttributedString()
