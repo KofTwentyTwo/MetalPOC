@@ -56,6 +56,12 @@ final class KPIClusterWidget: HUDElement {
         }
     }
 
+    private func barGauge(_ value: Float, max: Float, segments: Int = 10) -> String {
+        let filled = Int((value / max) * Float(segments))
+        let f = Swift.max(0, Swift.min(segments, filled))
+        return String(repeating: "▰", count: f) + String(repeating: "▱", count: segments - f)
+    }
+
     private func rebuildText(context: FrameContext) {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
@@ -69,7 +75,10 @@ final class KPIClusterWidget: HUDElement {
             .foregroundColor: NSColor.white,
             .paragraphStyle: paragraph
         ]
-        let lines = kpis.map { String(format: "%@   %5.1f%@", $0.label, $0.value, $0.unit) }
+        let lines = kpis.map { kpi -> String in
+            let bar = barGauge(kpi.value, max: 100)
+            return String(format: "%@  %@  %5.1f%@", kpi.label, bar, kpi.value, kpi.unit)
+        }
         let text = "[ SYS KPI ]\n" + lines.joined(separator: "\n")
         let attributed = NSAttributedString(string: text, attributes: attributes)
 

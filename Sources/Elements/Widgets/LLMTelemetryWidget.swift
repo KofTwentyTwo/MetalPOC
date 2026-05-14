@@ -58,6 +58,11 @@ final class LLMTelemetryWidget: HUDElement {
         latencyMs = max(80, min(1200, latencyMs + Float.random(in: -60...60)))
     }
 
+    private func barGauge(_ fraction: Float, segments: Int = 10) -> String {
+        let f = max(0, min(segments, Int(fraction * Float(segments))))
+        return String(repeating: "▰", count: f) + String(repeating: "▱", count: segments - f)
+    }
+
     private func rebuildText(context: FrameContext) {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
@@ -71,7 +76,7 @@ final class LLMTelemetryWidget: HUDElement {
         let text = """
         [ LLM TELEMETRY ]
         TOK/S    \(String(format: "%5.1f", tokensPerSec))
-        CTX      \(Int(contextUsed))/\(Int(contextMax)) (\(String(format: "%.1f", ctxPct))%)
+        CTX      \(barGauge(contextUsed / contextMax)) \(String(format: "%.1f", ctxPct))%
         COST     $\(String(format: "%.4f", cumulativeCost))
         LATENCY  \(String(format: "%.0f", latencyMs)) ms
         MODEL    \(models[modelIndex])
