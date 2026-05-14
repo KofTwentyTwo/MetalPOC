@@ -100,9 +100,26 @@ fragment float4 widget_fragment(WidgetVertexOut in [[stage_in]],
     float  scanAlpha = scanIntensity;
 
     // -------------------------------------------------------------------------
-    // Final composite.
+    // Hex grid background pattern (very subtle).
+    // Uses axial coords to identify which hex cell a fragment is in.
     // -------------------------------------------------------------------------
     float3 color = totalTextColor + frameColor + scanColor;
     float  alpha = clamp(max(totalTextAlpha, max(frameAlpha, scanAlpha)), 0.0, 1.0);
+
+    // Only draw hex grid inside the widget body.
+    if (interiorMask > 0.5) {
+        float2 hexUV = in.uv * float2(u.size.x * u.resolution.x, u.size.y * u.resolution.y); // pixels within widget
+        hexUV /= 28.0; // scale: ~28-pixel hex cells
+        float2 h = hexUV;
+        h.x *= 1.1547005; // 2/sqrt(3)
+        h.y += fmod(floor(h.x), 2.0) * 0.5;
+        float2 hf = fract(h) - 0.5;
+        float hexDist = max(abs(hf.x), max(abs(hf.y) + abs(hf.x) * 0.5, abs(hf.y) * 1.1547));
+        float hexEdge = smoothstep(0.45, 0.49, hexDist) - smoothstep(0.49, 0.50, hexDist);
+        float hexMask = hexEdge * 0.06;  // very faint
+        color += kCyan * hexMask;
+        alpha = max(alpha, hexMask);
+    }
+
     return premul(color, alpha);
 }
