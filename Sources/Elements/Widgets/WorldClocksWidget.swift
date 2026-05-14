@@ -4,8 +4,8 @@ import Foundation
 import simd
 
 final class WorldClocksWidget: HUDElement {
-    var origin: SIMD2<Float> = SIMD2(0.380, 0.860)
-    var size:   SIMD2<Float> = SIMD2(0.240, 0.075)
+    var origin: SIMD2<Float> = SIMD2(0.330, 0.860)
+    var size:   SIMD2<Float> = SIMD2(0.340, 0.075)
 
     private struct Uniforms {
         var resolution: SIMD2<Float>

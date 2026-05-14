@@ -5,7 +5,7 @@ import simd
 
 final class LogStreamWidget: HUDElement {
     var origin: SIMD2<Float> = SIMD2(0.050, 0.290)
-    var size:   SIMD2<Float> = SIMD2(0.240, 0.470)
+    var size:   SIMD2<Float> = SIMD2(0.260, 0.470)
 
     private struct Uniforms {
         var resolution: SIMD2<Float>
