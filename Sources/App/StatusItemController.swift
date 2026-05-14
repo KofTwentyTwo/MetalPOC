@@ -1,7 +1,11 @@
 import Cocoa
 
 final class StatusItemController {
-    /// Set by the AppDelegate once the HUD controller exists. Stays nil through Task 2.
+    var onFull:    (() -> Void)?
+    var onCompact: (() -> Void)?
+    var onHidden:  (() -> Void)?
+
+    /// Legacy single-toggle callback — kept for compatibility; cycles through modes.
     var onToggle: (() -> Void)?
 
     private let statusItem: NSStatusItem
@@ -25,9 +29,17 @@ final class StatusItemController {
     private func configureMenu() {
         let menu = NSMenu()
 
-        let toggleItem = NSMenuItem(title: "Toggle HUD", action: #selector(toggle), keyEquivalent: "h")
-        toggleItem.target = self
-        menu.addItem(toggleItem)
+        let fullItem = NSMenuItem(title: "Full HUD", action: #selector(triggerFull), keyEquivalent: "1")
+        fullItem.target = self
+        menu.addItem(fullItem)
+
+        let compactItem = NSMenuItem(title: "Compact (orb only)", action: #selector(triggerCompact), keyEquivalent: "2")
+        compactItem.target = self
+        menu.addItem(compactItem)
+
+        let hideItem = NSMenuItem(title: "Hide HUD", action: #selector(triggerHidden), keyEquivalent: "3")
+        hideItem.target = self
+        menu.addItem(hideItem)
 
         menu.addItem(.separator())
 
@@ -38,7 +50,7 @@ final class StatusItemController {
         statusItem.menu = menu
     }
 
-    @objc private func toggle() {
-        onToggle?()
-    }
+    @objc private func triggerFull()    { onFull?() }
+    @objc private func triggerCompact() { onCompact?() }
+    @objc private func triggerHidden()  { onHidden?() }
 }
