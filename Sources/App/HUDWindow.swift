@@ -1,9 +1,19 @@
 import Cocoa
 
 final class HUDWindow: NSWindow {
-    init(contentView: NSView) {
+    /// Container that holds NSVisualEffectView backdrops and the HUDView on top.
+    /// Exposed so HUDWindowController can populate it after widgets are constructed.
+    let containerView: NSView
+
+    init() {
         let screen = NSScreen.main ?? NSScreen.screens.first!
         let frame = screen.frame
+
+        let container = NSView(frame: NSRect(origin: .zero, size: frame.size))
+        container.wantsLayer = true
+        container.layer?.backgroundColor = NSColor.clear.cgColor
+        container.autoresizingMask = [.width, .height]
+        self.containerView = container
 
         super.init(
             contentRect: frame,
@@ -18,7 +28,7 @@ final class HUDWindow: NSWindow {
         level = .floating
         ignoresMouseEvents = true
         collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
-        self.contentView = contentView
+        contentView = container
     }
 
     override var canBecomeKey: Bool { false }
