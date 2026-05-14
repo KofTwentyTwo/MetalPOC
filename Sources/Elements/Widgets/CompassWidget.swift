@@ -70,9 +70,16 @@ final class CompassWidget: HUDElement {
             tape += "\(mark)\(String(format: "%03d", deg)) "
         }
         let bodyText = "\(String(format: "%05.1f° %@", headingDeg, cardinal(for: headingDeg)))\n\(tape.trimmingCharacters(in: .whitespaces))"
+        let microID = String(format: "0x%04X", abs(ObjectIdentifier(self).hashValue) & 0xFFFF)
+        let microAttrs: [NSAttributedString.Key: Any] = [
+            .font: NSFont(name: "ShareTechMono-Regular", size: 9) ?? NSFont.monospacedSystemFont(ofSize: 9, weight: .regular),
+            .foregroundColor: NSColor(red: 0.20, green: 0.85, blue: 1.0, alpha: 0.40),
+            .paragraphStyle: { let p = NSMutableParagraphStyle(); p.alignment = .right; return p }()
+        ]
         let attributed = NSMutableAttributedString()
         attributed.append(NSAttributedString(string: "[ HEADING ]\n", attributes: titleAttrs))
         attributed.append(NSAttributedString(string: bodyText, attributes: bodyAttrs))
+        attributed.append(NSAttributedString(string: "\n\(microID)", attributes: microAttrs))
 
         textTexture = context.textRasterizer.rasterize(
             attributed,

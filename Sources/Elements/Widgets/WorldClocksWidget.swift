@@ -66,9 +66,16 @@ final class WorldClocksWidget: HUDElement {
             formatter.timeZone = TimeZone(identifier: c.timeZoneID) ?? .current
             return "\(c.label) \(formatter.string(from: now))"
         }
+        let microID = String(format: "0x%04X", abs(ObjectIdentifier(self).hashValue) & 0xFFFF)
+        let microAttrs: [NSAttributedString.Key: Any] = [
+            .font: NSFont(name: "ShareTechMono-Regular", size: 9) ?? NSFont.monospacedSystemFont(ofSize: 9, weight: .regular),
+            .foregroundColor: NSColor(red: 0.20, green: 0.85, blue: 1.0, alpha: 0.40),
+            .paragraphStyle: { let p = NSMutableParagraphStyle(); p.alignment = .right; return p }()
+        ]
         let attributed = NSMutableAttributedString()
         attributed.append(NSAttributedString(string: "[ WORLD CLOCKS ]\n", attributes: titleAttrs))
         attributed.append(NSAttributedString(string: parts.joined(separator: "   "), attributes: bodyAttrs))
+        attributed.append(NSAttributedString(string: "\n\(microID)", attributes: microAttrs))
 
         textTexture = context.textRasterizer.rasterize(
             attributed,

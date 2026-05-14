@@ -85,6 +85,14 @@ final class ScheduleStripWidget: HUDElement {
             attributed.append(NSAttributedString(string: line, attributes: attrs))
         }
 
+        let microID = String(format: "0x%04X", abs(ObjectIdentifier(self).hashValue) & 0xFFFF)
+        let microAttrs: [NSAttributedString.Key: Any] = [
+            .font: NSFont(name: "ShareTechMono-Regular", size: 8) ?? NSFont.monospacedSystemFont(ofSize: 8, weight: .regular),
+            .foregroundColor: NSColor(red: 0.20, green: 0.85, blue: 1.0, alpha: 0.40),
+            .paragraphStyle: { let p = NSMutableParagraphStyle(); p.alignment = .right; return p }()
+        ]
+        attributed.append(NSAttributedString(string: " \(microID)", attributes: microAttrs))
+
         textTexture = context.textRasterizer.rasterize(
             attributed,
             maxSize: CGSize(width: widthPts, height: heightPts),
