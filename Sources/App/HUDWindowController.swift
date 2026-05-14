@@ -48,7 +48,10 @@ final class HUDWindowController: NSWindowController {
                 height: CGFloat(framed.size.y) * sz.height
             )
             let backdrop = NSVisualEffectView(frame: widgetRect)
-            backdrop.material = .hudWindow
+            // .fullScreenUI is a darker, flatter material than .hudWindow, which has a
+            // baked-in lighter rim along its top edge. Flat keeps the visible widget
+            // boundary aligned with the Metal frame line.
+            backdrop.material = .fullScreenUI
             backdrop.blendingMode = .behindWindow
             backdrop.state = .active
             backdrop.wantsLayer = true
