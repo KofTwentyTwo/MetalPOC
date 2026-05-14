@@ -67,15 +67,23 @@ final class HUDWindowController: NSWindowController {
             let halfXadj = CGFloat(framed.size.x) * aspect * 0.5
             let halfY = CGFloat(framed.size.y) * 0.5
             let chamferLeg = 2.0 * min(halfXadj, halfY) * 0.10 * sz.height
-            let mask = CAShapeLayer()
-            mask.frame = CGRect(origin: .zero, size: widgetRect.size)
-            mask.path = HUDWindowController.chamferedRectPath(
+            let chamferPath = HUDWindowController.chamferedRectPath(
                 width: widgetRect.width,
                 height: widgetRect.height,
                 chamfer: chamferLeg
             )
+            let mask = CAShapeLayer()
+            mask.frame = CGRect(origin: .zero, size: widgetRect.size)
+            mask.path = chamferPath
             mask.fillColor = NSColor.black.cgColor
             backdrop.layer?.mask = mask
+            // Dark tint sublayer ON TOP of the blur — forces Jarvis-style darkness regardless
+            // of what color the desktop content behind the HUD happens to be. The parent layer's
+            // mask clips this sublayer too, so it conforms to the chamfered shape.
+            let darkTint = CALayer()
+            darkTint.frame = CGRect(origin: .zero, size: widgetRect.size)
+            darkTint.backgroundColor = NSColor(red: 0.03, green: 0.06, blue: 0.10, alpha: 0.55).cgColor
+            backdrop.layer?.addSublayer(darkTint)
             container.addSubview(backdrop)
             backdropViews.append(backdrop)
         }
