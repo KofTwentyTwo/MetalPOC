@@ -14,7 +14,7 @@ final class ScheduleStripWidget: HUDElement {
         var frameAlpha: Float
         var textAlpha: Float
         var time: Float
-        var _pad1: Float = 0
+        var flashAge: Float = 999
     }
 
     private struct Event {
@@ -31,6 +31,7 @@ final class ScheduleStripWidget: HUDElement {
 
     private var timeSinceRebuild: Float = 0
     private let rebuildInterval: Float = 0.5  // 2 Hz redraw
+    private var lastChangeTime: Float = -999
     private var textTexture: MTLTexture?
 
     func update(context: FrameContext) {
@@ -52,6 +53,7 @@ final class ScheduleStripWidget: HUDElement {
         if timeSinceRebuild >= rebuildInterval {
             timeSinceRebuild = 0
             rebuildText(context: context)
+            lastChangeTime = context.time
         }
     }
 
@@ -109,7 +111,8 @@ final class ScheduleStripWidget: HUDElement {
             tint: SIMD4<Float>(1, 1, 1, 1),
             frameAlpha: 0.8,
             textAlpha: 1.0,
-            time: context.time
+            time: context.time,
+            flashAge: context.time - lastChangeTime
         )
         encoder.setRenderPipelineState(context.pipelines.widget)
         encoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 0)

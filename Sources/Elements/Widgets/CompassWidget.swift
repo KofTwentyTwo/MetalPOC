@@ -14,13 +14,14 @@ final class CompassWidget: HUDElement {
         var frameAlpha: Float
         var textAlpha: Float
         var time: Float
-        var _pad1: Float = 0
+        var flashAge: Float = 999
     }
 
     private var headingDeg: Float = 27   // bearing in degrees, 0..360
     private var driftRate: Float = 3     // deg/sec average rotation
     private var timeSinceUpdate: Float = 0
     private let updateInterval: Float = 0.25  // 4 Hz redraw
+    private var lastChangeTime: Float = -999
 
     private var textTexture: MTLTexture?
     private var textDirty = true
@@ -36,6 +37,7 @@ final class CompassWidget: HUDElement {
         }
         if textDirty {
             rebuildText(context: context)
+            lastChangeTime = context.time
             textDirty = false
         }
     }
@@ -97,7 +99,8 @@ final class CompassWidget: HUDElement {
             tint: SIMD4<Float>(0.20, 0.85, 1.0, 1.0),
             frameAlpha: 0.8,
             textAlpha: 1.0,
-            time: context.time
+            time: context.time,
+            flashAge: context.time - lastChangeTime
         )
         encoder.setRenderPipelineState(context.pipelines.widget)
         encoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 0)

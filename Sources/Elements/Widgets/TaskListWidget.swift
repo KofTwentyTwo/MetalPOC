@@ -14,7 +14,7 @@ final class TaskListWidget: HUDElement {
         var frameAlpha: Float
         var textAlpha: Float
         var time: Float
-        var _pad1: Float = 0
+        var flashAge: Float = 999
     }
 
     private struct Task {
@@ -36,6 +36,7 @@ final class TaskListWidget: HUDElement {
 
     private var timeSinceFlip: Float = 0
     private let flipInterval: Float = 8.0
+    private var lastChangeTime: Float = -999
     private var textTexture: MTLTexture?
     private var textDirty = true
 
@@ -65,6 +66,7 @@ final class TaskListWidget: HUDElement {
         }
         if textDirty {
             rebuildText(context: context)
+            lastChangeTime = context.time
             textDirty = false
         }
     }
@@ -152,7 +154,8 @@ final class TaskListWidget: HUDElement {
             tint: SIMD4<Float>(1, 1, 1, 1),
             frameAlpha: 0.8,
             textAlpha: 1.0,
-            time: context.time
+            time: context.time,
+            flashAge: context.time - lastChangeTime
         )
         encoder.setRenderPipelineState(context.pipelines.widget)
         encoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 0)

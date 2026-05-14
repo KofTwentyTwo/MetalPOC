@@ -15,7 +15,7 @@ final class LogStreamWidget: HUDElement {
         var frameAlpha: Float
         var textAlpha: Float
         var time: Float
-        var _pad1: Float = 0
+        var flashAge: Float = 999
     }
 
     private struct Line {
@@ -52,6 +52,7 @@ final class LogStreamWidget: HUDElement {
 
     private var timeSinceLine: Float = 0
     private var nextDelay: Float = 0.4
+    private var lastChangeTime: Float = -999
     private var textTexture: MTLTexture?
     private var textDirty = false
 
@@ -65,6 +66,7 @@ final class LogStreamWidget: HUDElement {
         }
         if textDirty {
             rebuildText(context: context)
+            lastChangeTime = context.time
             textDirty = false
         }
     }
@@ -139,7 +141,8 @@ final class LogStreamWidget: HUDElement {
             tint: SIMD4<Float>(1, 1, 1, 1),
             frameAlpha: 0.8,
             textAlpha: 1.0,
-            time: context.time
+            time: context.time,
+            flashAge: context.time - lastChangeTime
         )
         encoder.setRenderPipelineState(context.pipelines.widget)
         encoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 0)

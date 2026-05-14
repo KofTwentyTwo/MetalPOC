@@ -14,7 +14,7 @@ final class StatusTickerWidget: HUDElement {
         var frameAlpha: Float
         var textAlpha: Float
         var time: Float
-        var _pad1: Float = 0
+        var flashAge: Float = 999
     }
 
     private let messages: [String] = [
@@ -89,7 +89,8 @@ final class StatusTickerWidget: HUDElement {
             tint: SIMD4<Float>(0.20, 0.85, 1.0, 1.0),
             frameAlpha: 0.5,
             textAlpha: 1.0,
-            time: context.time
+            time: context.time,
+            flashAge: 999
         )
         encoder.setRenderPipelineState(context.pipelines.widget)
         encoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 0)

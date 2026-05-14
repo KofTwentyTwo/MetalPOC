@@ -10,7 +10,7 @@ struct WidgetUniforms {
     float frameAlpha;       // 0..1 — how visible the bordering frame is
     float textAlpha;        // 0..1 — how visible the sampled texture is
     float time;             // elapsed time in seconds (for animation)
-    float _pad1;
+    float flashAge;         // seconds since last content change (for reactive flash)
 };
 
 struct WidgetVertexOut {
@@ -84,8 +84,11 @@ fragment float4 widget_fragment(WidgetVertexOut in [[stage_in]],
     float aa = 2.0 / u.resolution.y;
     float frameMask = max(aaEdge(dBorder, aa),
                           softGlow(dBorder, 0.004) * 0.4);
-    float3 frameColor = kBrightCyan * frameMask;
-    float  frameAlpha = frameMask * u.frameAlpha;
+    // Reactive flash: brief brightness boost when content changes.
+    float flashBoost = exp(-u.flashAge * 6.0) * 0.6;
+    float flashedFrameMask = frameMask * (1.0 + flashBoost * 1.5);
+    float3 frameColor = kBrightCyan * flashedFrameMask + kBrightCyan * frameMask * flashBoost;
+    float  frameAlpha = flashedFrameMask * u.frameAlpha;
 
     // -------------------------------------------------------------------------
     // Animated scanline drift — thin cyan band scrolling down the widget.

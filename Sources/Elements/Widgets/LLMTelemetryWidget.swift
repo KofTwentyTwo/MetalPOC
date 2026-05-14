@@ -14,7 +14,7 @@ final class LLMTelemetryWidget: HUDElement {
         var frameAlpha: Float
         var textAlpha: Float
         var time: Float
-        var _pad1: Float = 0
+        var flashAge: Float = 999
     }
 
     private var tokensPerSec: Float = 42
@@ -27,6 +27,7 @@ final class LLMTelemetryWidget: HUDElement {
     private var timeSinceModelSwap: Float = 0
     private var timeSinceUpdate: Float = 0
     private let updateInterval: Float = 0.5  // 2 Hz
+    private var lastChangeTime: Float = -999
 
     private var textTexture: MTLTexture?
     private var textDirty = true
@@ -46,6 +47,7 @@ final class LLMTelemetryWidget: HUDElement {
         }
         if textDirty {
             rebuildText(context: context)
+            lastChangeTime = context.time
             textDirty = false
         }
     }
@@ -111,7 +113,8 @@ final class LLMTelemetryWidget: HUDElement {
             tint: SIMD4<Float>(0.20, 0.85, 1.0, 1.0),
             frameAlpha: 0.8,
             textAlpha: 1.0,
-            time: context.time
+            time: context.time,
+            flashAge: context.time - lastChangeTime
         )
         encoder.setRenderPipelineState(context.pipelines.widget)
         encoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 0)
