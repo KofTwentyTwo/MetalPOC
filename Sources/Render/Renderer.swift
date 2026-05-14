@@ -90,7 +90,7 @@ final class Renderer: NSObject, MTKViewDelegate {
         // `glitchBurstDuration`. After firing, schedule the next at a fresh random time.
         let glitchAmount: Float
         if elapsed >= nextGlitchAt {
-            if lastGlitchFiredAt < 0 || (elapsed - lastGlitchFiredAt) > glitchBurstDuration {
+            if lastGlitchFiredAt < 0 {
                 // First moment we cross the threshold — record fire time.
                 lastGlitchFiredAt = elapsed
             }
@@ -98,8 +98,9 @@ final class Renderer: NSObject, MTKViewDelegate {
             if burstAge < glitchBurstDuration {
                 glitchAmount = 1.0 - (burstAge / glitchBurstDuration)
             } else {
-                // Burst finished — schedule next glitch 8–12 min from now.
+                // Burst finished — schedule next glitch 8–12 min from now and arm.
                 nextGlitchAt = elapsed + .random(in: 480...720)
+                lastGlitchFiredAt = -1
                 glitchAmount = 0
             }
         } else {
