@@ -6,6 +6,7 @@ final class Pipelines {
     let widget: MTLRenderPipelineState
     let vitals: MTLRenderPipelineState
     let spectrum: MTLRenderPipelineState
+    let glitch: MTLRenderPipelineState
 
     init(device: MTLDevice, library: MTLLibrary, colorPixelFormat: MTLPixelFormat) throws {
         self.ornament = try Pipelines.makePipeline(
@@ -32,6 +33,16 @@ final class Pipelines {
             device: device, library: library, colorPixelFormat: colorPixelFormat,
             vertexFunctionName: "spectrum_vertex", fragmentFunctionName: "spectrum_fragment",
             label: "SpectrumPipeline")
+
+        // Glitch post-process: draws to the drawable using .bgra8Unorm since it
+        // samples from the intermediate texture (not blended over transparency).
+        let glitchDesc = MTLRenderPipelineDescriptor()
+        glitchDesc.label = "GlitchPipeline"
+        glitchDesc.vertexFunction = library.makeFunction(name: "glitch_vertex")
+        glitchDesc.fragmentFunction = library.makeFunction(name: "glitch_fragment")
+        glitchDesc.colorAttachments[0].pixelFormat = colorPixelFormat
+        glitchDesc.colorAttachments[0].isBlendingEnabled = false
+        self.glitch = try device.makeRenderPipelineState(descriptor: glitchDesc)
     }
 
     static func makePipeline(
