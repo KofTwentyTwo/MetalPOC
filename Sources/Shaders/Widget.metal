@@ -112,18 +112,7 @@ fragment float4 widget_fragment(WidgetVertexOut in [[stage_in]],
     float3 color = totalTextColor + frameColor + scanColor;
     float  alpha = clamp(max(totalTextAlpha, max(frameAlpha, scanAlpha)), 0.0, 1.0);
 
-    // Dark translucent panel — ensures the widget body reads as a panel over any
-    // desktop color (works regardless of light/dark wallpaper). The hex grid and
-    // text glow against this consistent backdrop.
-    if (interiorMask > 0.5) {
-        float panelAlpha = 0.62;
-        float3 panelRGB = float3(0.025, 0.045, 0.075);  // very dark blue-gray
-        // Composite panel UNDER existing premultiplied content.
-        color += panelRGB * panelAlpha * (1.0 - alpha);
-        alpha += panelAlpha * (1.0 - alpha);
-    }
-
-    // Hex grid pattern on top of the panel — now genuinely visible.
+    // Hex grid pattern on top of the NSVisualEffectView blur — now genuinely visible.
     if (interiorMask > 0.5) {
         float2 hexUV = in.uv * float2(u.size.x * u.resolution.x, u.size.y * u.resolution.y);
         hexUV /= 28.0;
@@ -133,7 +122,7 @@ fragment float4 widget_fragment(WidgetVertexOut in [[stage_in]],
         float2 hf = fract(h) - 0.5;
         float hexDist = max(abs(hf.x), max(abs(hf.y) + abs(hf.x) * 0.5, abs(hf.y) * 1.1547));
         float hexEdge = smoothstep(0.45, 0.49, hexDist) - smoothstep(0.49, 0.50, hexDist);
-        float hexMask = hexEdge * 0.22;  // bumped from 0.06 — visible against the dark panel
+        float hexMask = hexEdge * 0.14;  // visible against the NSVisualEffectView blur
         color += kCyan * hexMask;
         alpha = max(alpha, hexMask);
     }
