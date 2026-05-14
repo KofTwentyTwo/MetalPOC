@@ -3,8 +3,8 @@ import AppKit
 import simd
 
 final class LLMTelemetryWidget: FramedHUDWidget {
-    var origin: SIMD2<Float> = SIMD2(0.700, 0.810)
-    var size:   SIMD2<Float> = SIMD2(0.250, 0.080)
+    var origin: SIMD2<Float> = Theme.Layout.llmTelemetry.origin
+    var size:   SIMD2<Float> = Theme.Layout.llmTelemetry.size
 
     private struct Uniforms {
         var resolution: SIMD2<Float>
@@ -29,7 +29,7 @@ final class LLMTelemetryWidget: FramedHUDWidget {
     private var revealStart: Float = -1
 
     private var timeSinceUpdate: Float = 0
-    private let updateInterval: Float = 0.5  // 2 Hz
+    private let updateInterval: Float = Theme.Tick.llmUpdateSec
     private var lastChangeTime: Float = -999
 
     private var textTexture: MTLTexture?
@@ -45,7 +45,7 @@ final class LLMTelemetryWidget: FramedHUDWidget {
             advanceMockData(deltaTime: updateInterval)
             textDirty = true
         }
-        if timeSinceModelSwap >= 30 {
+        if timeSinceModelSwap >= Theme.Tick.llmModelSwapSec {
             timeSinceModelSwap = 0
             modelIndex = (modelIndex + 1) % models.count
             textDirty = true
@@ -74,13 +74,13 @@ final class LLMTelemetryWidget: FramedHUDWidget {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
 
-        let bodyFont  = NSFont(name: "ShareTechMono-Regular", size: 12) ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)
-        let titleFont = NSFont(name: "Orbitron-Bold", size: 13) ?? NSFont.monospacedSystemFont(ofSize: 13, weight: .bold)
+        let bodyFont  = Theme.Font.body(size: Theme.Font.widgetBodySize)
+        let titleFont = Theme.Font.title(size: Theme.Font.widgetTitleSize)
         let titleAttrs: [NSAttributedString.Key: Any] = [
-            .font: titleFont, .foregroundColor: NSColor.white
+            .font: titleFont, .foregroundColor: Theme.Palette.textWhite
         ]
         let bodyAttrs: [NSAttributedString.Key: Any] = [
-            .font: bodyFont, .foregroundColor: NSColor.white
+            .font: bodyFont, .foregroundColor: Theme.Palette.textWhite
         ]
 
         let ctxPct = (contextUsed / contextMax) * 100
@@ -94,8 +94,8 @@ final class LLMTelemetryWidget: FramedHUDWidget {
 
         let microID = String(format: "0x%04X", abs(ObjectIdentifier(self).hashValue) & 0xFFFF)
         let microAttrs: [NSAttributedString.Key: Any] = [
-            .font: NSFont(name: "ShareTechMono-Regular", size: 9) ?? NSFont.monospacedSystemFont(ofSize: 9, weight: .regular),
-            .foregroundColor: NSColor(red: 0.20, green: 0.85, blue: 1.0, alpha: 0.40),
+            .font: Theme.Font.body(size: Theme.Font.microReadoutSize),
+            .foregroundColor: Theme.Palette.textMicroReadout,
             .paragraphStyle: { let p = NSMutableParagraphStyle(); p.alignment = .right; return p }()
         ]
         let attributed = NSMutableAttributedString()
@@ -115,7 +115,7 @@ final class LLMTelemetryWidget: FramedHUDWidget {
             resolution: context.resolution,
             origin: origin,
             size: size,
-            tint: SIMD4<Float>(0.20, 0.85, 1.0, 1.0),
+            tint: Theme.Palette.cyanTint,
             frameAlpha: 0.8,
             textAlpha: 1.0,
             time: context.time,

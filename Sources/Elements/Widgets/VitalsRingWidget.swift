@@ -3,7 +3,7 @@ import simd
 
 final class VitalsRingWidget: HUDElement {
     /// Must match `OrbElement.radius` so the vital rings sit just outside the orb.
-    var orbRadius: Float = 0.18
+    var orbRadius: Float = Theme.Orb.radius
 
     private struct Uniforms {
         var resolution: SIMD2<Float>
@@ -20,7 +20,7 @@ final class VitalsRingWidget: HUDElement {
     private var fanRpm: Float = 0.35
 
     private var timeSinceTick: Float = 0
-    private let tickInterval: Float = 0.25
+    private let tickInterval: Float = Theme.Tick.vitalsUpdateSec
 
     func update(context: FrameContext) {
         timeSinceTick += context.deltaTime

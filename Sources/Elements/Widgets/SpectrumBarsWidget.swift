@@ -2,8 +2,8 @@ import Metal
 import simd
 
 final class SpectrumBarsWidget: HUDElement {
-    var orbRadius: Float = 0.18
-    static let barCount = 32
+    var orbRadius: Float = Theme.Orb.radius
+    static let barCount = Theme.Tick.spectrumBarCount
 
     private struct Uniforms {
         var resolution: SIMD2<Float>
@@ -22,7 +22,7 @@ final class SpectrumBarsWidget: HUDElement {
     private var freqs:  [Float] = (0..<SpectrumBarsWidget.barCount).map { _ in Float.random(in: 0.7...2.4) }
 
     private var timeSinceTick: Float = 0
-    private let tickInterval: Float = 1.0 / 30.0
+    private let tickInterval: Float = Theme.Tick.spectrumUpdateSec
 
     func update(context: FrameContext) {
         timeSinceTick += context.deltaTime

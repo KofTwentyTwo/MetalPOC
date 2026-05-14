@@ -5,8 +5,8 @@ import CoreGraphics
 import simd
 
 final class StatusTickerWidget: FramedHUDWidget {
-    var origin: SIMD2<Float> = SIMD2(0.050, 0.055)
-    var size:   SIMD2<Float> = SIMD2(0.900, 0.025)
+    var origin: SIMD2<Float> = Theme.Layout.statusTicker.origin
+    var size:   SIMD2<Float> = Theme.Layout.statusTicker.size
 
     private struct Uniforms {
         var resolution: SIMD2<Float>
@@ -40,7 +40,7 @@ final class StatusTickerWidget: FramedHUDWidget {
     // Scroll state in points (continuous, sub-pixel). When > widget_width + cachedLineWidth,
     // the message has fully scrolled off the left and we switch to the next.
     private var scrollPositionPts: Float = 0
-    private let scrollSpeedPtsPerSec: Float = 140   // tunable; 140pt/s ≈ smooth ticker pace
+    private let scrollSpeedPtsPerSec: Float = Theme.Tick.tickerScrollSpeedPtsPerSec
 
     private var textTexture: MTLTexture?
     private var cachedLineWidthPts: CGFloat = 0
@@ -89,8 +89,7 @@ final class StatusTickerWidget: FramedHUDWidget {
         ctx.setShouldSmoothFonts(true)
 
         // Build attributed string for the single-line ticker text.
-        let font = NSFont(name: "ShareTechMono-Regular", size: 12)
-            ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+        let font = Theme.Font.body(size: Theme.Font.statusTickerSize)
         let attrs: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: NSColor.white
@@ -142,7 +141,7 @@ final class StatusTickerWidget: FramedHUDWidget {
             resolution: context.resolution,
             origin: origin,
             size: size,
-            tint: SIMD4<Float>(0.20, 0.85, 1.0, 1.0),
+            tint: Theme.Palette.cyanTint,
             frameAlpha: 0.5,
             textAlpha: 1.0,
             time: context.time,

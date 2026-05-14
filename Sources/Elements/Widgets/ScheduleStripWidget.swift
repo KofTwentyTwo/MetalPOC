@@ -3,8 +3,8 @@ import AppKit
 import simd
 
 final class ScheduleStripWidget: FramedHUDWidget {
-    var origin: SIMD2<Float> = SIMD2(0.300, 0.090)
-    var size:   SIMD2<Float> = SIMD2(0.400, 0.045)
+    var origin: SIMD2<Float> = Theme.Layout.scheduleStrip.origin
+    var size:   SIMD2<Float> = Theme.Layout.scheduleStrip.size
 
     private struct Uniforms {
         var resolution: SIMD2<Float>
@@ -33,7 +33,7 @@ final class ScheduleStripWidget: FramedHUDWidget {
     private var revealStart: Float = -1
 
     private var timeSinceRebuild: Float = 0
-    private let rebuildInterval: Float = 0.5  // 2 Hz redraw
+    private let rebuildInterval: Float = Theme.Tick.scheduleRedrawSec
     private var lastChangeTime: Float = -999
     private var textTexture: MTLTexture?
 
@@ -43,13 +43,13 @@ final class ScheduleStripWidget: FramedHUDWidget {
         for i in events.indices {
             events[i].remaining -= context.deltaTime
             if events[i].remaining <= 0 && events[i].flashing == 0 {
-                events[i].flashing = 2.0
+                events[i].flashing = Theme.Tick.scheduleFlashDurSec
             }
             if events[i].flashing > 0 {
                 events[i].flashing -= context.deltaTime
                 if events[i].flashing <= 0 {
                     // Reset to a new future time.
-                    events[i].remaining = Float.random(in: 120...600)
+                    events[i].remaining = Float.random(in: Theme.Tick.scheduleResetMinSec...Theme.Tick.scheduleResetMaxSec)
                     events[i].flashing = 0
                 }
             }
@@ -76,7 +76,7 @@ final class ScheduleStripWidget: FramedHUDWidget {
 
         // Sized to fill the widget body height after inset (~60pt usable on the
         // 76pt strip — 36pt font reads as the dominant content).
-        let font = NSFont(name: "ShareTechMono-Regular", size: 36) ?? NSFont.monospacedSystemFont(ofSize: 36, weight: .medium)
+        let font = Theme.Font.body(size: Theme.Font.scheduleStripSize)
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
         let attributed = NSMutableAttributedString()
@@ -84,8 +84,8 @@ final class ScheduleStripWidget: FramedHUDWidget {
         for (i, ev) in events.enumerated() {
             let pulsing = ev.flashing > 0
             let color: NSColor = pulsing
-                ? NSColor(red: 1.0, green: 0.9, blue: 0.4, alpha: 1.0)
-                : NSColor.white
+                ? Theme.Palette.textScheduleFlash
+                : Theme.Palette.textWhite
             let attrs: [NSAttributedString.Key: Any] = [
                 .font: font, .foregroundColor: color, .paragraphStyle: paragraph
             ]
@@ -96,8 +96,8 @@ final class ScheduleStripWidget: FramedHUDWidget {
 
         let microID = String(format: "0x%04X", abs(ObjectIdentifier(self).hashValue) & 0xFFFF)
         let microAttrs: [NSAttributedString.Key: Any] = [
-            .font: NSFont(name: "ShareTechMono-Regular", size: 8) ?? NSFont.monospacedSystemFont(ofSize: 8, weight: .regular),
-            .foregroundColor: NSColor(red: 0.20, green: 0.85, blue: 1.0, alpha: 0.40),
+            .font: Theme.Font.body(size: Theme.Font.scheduleStripMicroSize),
+            .foregroundColor: Theme.Palette.textMicroReadout,
             .paragraphStyle: { let p = NSMutableParagraphStyle(); p.alignment = .right; return p }()
         ]
         attributed.append(NSAttributedString(string: " \(microID)", attributes: microAttrs))

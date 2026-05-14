@@ -13,14 +13,14 @@ final class HUDWindowController: NSWindowController {
 
         // Staggered boot-up reveal: ornament/orb/rings appear immediately,
         // text widgets pop in sequentially 200ms apart.
-        let kpi = KPIClusterWidget();          kpi.revealDelay = 0.3
-        let llm = LLMTelemetryWidget();        llm.revealDelay = 0.5
-        let clocks = WorldClocksWidget();      clocks.revealDelay = 0.7
-        let log = LogStreamWidget();           log.revealDelay = 0.9
-        let tasks = TaskListWidget();          tasks.revealDelay = 1.1
-        let compass = CompassWidget();         compass.revealDelay = 1.3
-        let schedule = ScheduleStripWidget();  schedule.revealDelay = 1.5
-        let ticker = StatusTickerWidget();     ticker.revealDelay = 1.7
+        let kpi = KPIClusterWidget();          kpi.revealDelay = Theme.Reveal.kpiCluster
+        let llm = LLMTelemetryWidget();        llm.revealDelay = Theme.Reveal.llmTelemetry
+        let clocks = WorldClocksWidget();      clocks.revealDelay = Theme.Reveal.worldClocks
+        let log = LogStreamWidget();           log.revealDelay = Theme.Reveal.logStream
+        let tasks = TaskListWidget();          tasks.revealDelay = Theme.Reveal.taskList
+        let compass = CompassWidget();         compass.revealDelay = Theme.Reveal.compass
+        let schedule = ScheduleStripWidget();  schedule.revealDelay = Theme.Reveal.scheduleStrip
+        let ticker = StatusTickerWidget();     ticker.revealDelay = Theme.Reveal.statusTicker
 
         let widgets: [HUDElement] = [
             OrnamentElement(),
@@ -51,10 +51,10 @@ final class HUDWindowController: NSWindowController {
             // Jarvis-style dark frosted glass: .hudWindow + explicit vibrantDark gives a
             // tinted-dark backdrop with heavy gaussian blur — translucent enough to see
             // the desktop showing through, but dark enough to keep the HUD aesthetic.
-            backdrop.material = .hudWindow
+            backdrop.material = Theme.Backdrop.blurMaterial
             backdrop.blendingMode = .behindWindow
             backdrop.state = .active
-            backdrop.appearance = NSAppearance(named: .vibrantDark)
+            backdrop.appearance = NSAppearance(named: Theme.Backdrop.blurAppearanceName)
             backdrop.wantsLayer = true
             backdrop.autoresizingMask = []
             // Compute chamfer leg in NSView points to match the Metal shader exactly.
@@ -82,7 +82,7 @@ final class HUDWindowController: NSWindowController {
             // mask clips this sublayer too, so it conforms to the chamfered shape.
             let darkTint = CALayer()
             darkTint.frame = CGRect(origin: .zero, size: widgetRect.size)
-            darkTint.backgroundColor = NSColor(red: 0.03, green: 0.06, blue: 0.10, alpha: 0.55).cgColor
+            darkTint.backgroundColor = Theme.Backdrop.tintColor
             backdrop.layer?.addSublayer(darkTint)
             container.addSubview(backdrop)
             backdropViews.append(backdrop)

@@ -4,8 +4,8 @@ import simd
 
 final class KPIClusterWidget: FramedHUDWidget {
     // Screen-normalized [0..1] origin and size (bottom-left origin).
-    var origin: SIMD2<Float> = SIMD2(0.050, 0.825)
-    var size:   SIMD2<Float> = SIMD2(0.250, 0.065)
+    var origin: SIMD2<Float> = Theme.Layout.kpiCluster.origin
+    var size:   SIMD2<Float> = Theme.Layout.kpiCluster.size
 
     private struct Uniforms {
         var resolution: SIMD2<Float>
@@ -35,7 +35,7 @@ final class KPIClusterWidget: FramedHUDWidget {
     private var revealStart: Float = -1
 
     private var timeSinceUpdate: Float = 0
-    private let updateInterval: Float = 0.5  // 2 Hz
+    private let updateInterval: Float = Theme.Tick.kpiUpdateSec
     private var lastChangeTime: Float = -999
 
     private var textTexture: MTLTexture?
@@ -76,19 +76,19 @@ final class KPIClusterWidget: FramedHUDWidget {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
 
-        let bodyFont = NSFont(name: "ShareTechMono-Regular", size: 12) ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)
-        let titleFont = NSFont(name: "Orbitron-Bold", size: 13) ?? NSFont.monospacedSystemFont(ofSize: 13, weight: .bold)
+        let bodyFont = Theme.Font.body(size: Theme.Font.widgetBodySize)
+        let titleFont = Theme.Font.title(size: Theme.Font.widgetTitleSize)
         let paragraph = NSMutableParagraphStyle()
         paragraph.lineSpacing = 2
 
         let titleAttrs: [NSAttributedString.Key: Any] = [
             .font: titleFont,
-            .foregroundColor: NSColor.white,
+            .foregroundColor: Theme.Palette.textWhite,
             .paragraphStyle: paragraph
         ]
         let bodyAttrs: [NSAttributedString.Key: Any] = [
             .font: bodyFont,
-            .foregroundColor: NSColor.white,
+            .foregroundColor: Theme.Palette.textWhite,
             .paragraphStyle: paragraph
         ]
         let lines = kpis.map { kpi -> String in
@@ -97,8 +97,8 @@ final class KPIClusterWidget: FramedHUDWidget {
         }
         let microID = String(format: "0x%04X", abs(ObjectIdentifier(self).hashValue) & 0xFFFF)
         let microAttrs: [NSAttributedString.Key: Any] = [
-            .font: NSFont(name: "ShareTechMono-Regular", size: 9) ?? NSFont.monospacedSystemFont(ofSize: 9, weight: .regular),
-            .foregroundColor: NSColor(red: 0.20, green: 0.85, blue: 1.0, alpha: 0.40),
+            .font: Theme.Font.body(size: Theme.Font.microReadoutSize),
+            .foregroundColor: Theme.Palette.textMicroReadout,
             .paragraphStyle: { let p = NSMutableParagraphStyle(); p.alignment = .right; return p }()
         ]
         let attributed = NSMutableAttributedString()
@@ -118,7 +118,7 @@ final class KPIClusterWidget: FramedHUDWidget {
             let sparkW: CGFloat = 56       // width of sparkline area
             let sparkH: CGFloat = 9        // height of sparkline
             let sparkX: CGFloat = size.width - sparkW - 4  // right-aligned with small margin
-            ctx.setStrokeColor(NSColor(red: 0.20, green: 0.85, blue: 1.0, alpha: 0.65).cgColor)
+            ctx.setStrokeColor(NSColor(red: CGFloat(Theme.Palette.cyanTint.x), green: CGFloat(Theme.Palette.cyanTint.y), blue: CGFloat(Theme.Palette.cyanTint.z), alpha: 0.65).cgColor)
             ctx.setLineWidth(0.75)
             ctx.setLineJoin(.round)
             for (i, kpi) in kpisCopy.enumerated() where kpi.history.count >= 2 {
@@ -144,7 +144,7 @@ final class KPIClusterWidget: FramedHUDWidget {
             resolution: context.resolution,
             origin: origin,
             size: size,
-            tint: SIMD4<Float>(0.20, 0.85, 1.0, 1.0),
+            tint: Theme.Palette.cyanTint,
             frameAlpha: 0.8,
             textAlpha: 1.0,
             time: context.time,

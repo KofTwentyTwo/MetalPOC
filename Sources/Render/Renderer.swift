@@ -16,9 +16,9 @@ final class Renderer: NSObject, MTKViewDelegate {
     private var intermediateSize: CGSize = .zero
     // Glitch fires at a random interval averaging ~10 minutes (range 8–12 min).
     // Brief burst — fades over ~0.15s.
-    private var nextGlitchAt: Float = .random(in: 480...720)  // 8–12 min from launch
+    private var nextGlitchAt: Float = .random(in: Theme.Glitch.minIntervalSec...Theme.Glitch.maxIntervalSec)
     private var lastGlitchFiredAt: Float = -1
-    private let glitchBurstDuration: Float = 0.15
+    private let glitchBurstDuration: Float = Theme.Glitch.burstDurationSec
 
     init?(view: MTKView) {
         guard let device = view.device,
@@ -99,7 +99,7 @@ final class Renderer: NSObject, MTKViewDelegate {
                 glitchAmount = 1.0 - (burstAge / glitchBurstDuration)
             } else {
                 // Burst finished — schedule next glitch 8–12 min from now and arm.
-                nextGlitchAt = elapsed + .random(in: 480...720)
+                nextGlitchAt = elapsed + .random(in: Theme.Glitch.minIntervalSec...Theme.Glitch.maxIntervalSec)
                 lastGlitchFiredAt = -1
                 glitchAmount = 0
             }

@@ -4,8 +4,8 @@ import Foundation
 import simd
 
 final class LogStreamWidget: FramedHUDWidget {
-    var origin: SIMD2<Float> = SIMD2(0.050, 0.500)
-    var size:   SIMD2<Float> = SIMD2(0.260, 0.260)
+    var origin: SIMD2<Float> = Theme.Layout.logStream.origin
+    var size:   SIMD2<Float> = Theme.Layout.logStream.size
 
     private struct Uniforms {
         var resolution: SIMD2<Float>
@@ -48,7 +48,7 @@ final class LogStreamWidget: FramedHUDWidget {
     ]
 
     private var lines: [Line] = []
-    private let maxLines = 22
+    private let maxLines = Theme.Tick.logMaxLines
 
     var revealDelay: Float = 0
     private var revealStart: Float = -1
@@ -65,7 +65,7 @@ final class LogStreamWidget: FramedHUDWidget {
         timeSinceLine += context.deltaTime
         if timeSinceLine >= nextDelay {
             timeSinceLine = 0
-            nextDelay = Float.random(in: 0.30...1.10)
+            nextDelay = Float.random(in: Theme.Tick.logMinDelaySec...Theme.Tick.logMaxDelaySec)
             appendLine()
             textDirty = true
         }
@@ -95,14 +95,14 @@ final class LogStreamWidget: FramedHUDWidget {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
 
-        let font = NSFont(name: "ShareTechMono-Regular", size: 11) ?? NSFont.monospacedSystemFont(ofSize: 11, weight: .regular)
+        let font = Theme.Font.body(size: Theme.Font.logBodySize)
         let paragraph = NSMutableParagraphStyle()
         paragraph.lineSpacing = 2
 
         let attributed = NSMutableAttributedString()
         let header: [NSAttributedString.Key: Any] = [
-            .font: NSFont(name: "Orbitron-Bold", size: 13) ?? NSFont.monospacedSystemFont(ofSize: 13, weight: .bold),
-            .foregroundColor: NSColor.white,
+            .font: Theme.Font.title(size: Theme.Font.widgetTitleSize),
+            .foregroundColor: Theme.Palette.textWhite,
             .paragraphStyle: paragraph
         ]
         attributed.append(NSAttributedString(string: "[ LOG STREAM ]\n", attributes: header))
@@ -110,9 +110,9 @@ final class LogStreamWidget: FramedHUDWidget {
         for line in lines {
             let color: NSColor
             switch line.level {
-            case "ERROR": color = NSColor(red: 1.0, green: 0.5, blue: 0.5, alpha: 1.0)
-            case "WARN":  color = NSColor(red: 1.0, green: 0.85, blue: 0.4, alpha: 1.0)
-            default:      color = NSColor.white
+            case "ERROR": color = Theme.Palette.textLogError
+            case "WARN":  color = Theme.Palette.textLogWarn
+            default:      color = Theme.Palette.textWhite
             }
             let attrs: [NSAttributedString.Key: Any] = [
                 .font: font, .foregroundColor: color, .paragraphStyle: paragraph
@@ -124,8 +124,8 @@ final class LogStreamWidget: FramedHUDWidget {
 
         let microID = String(format: "0x%04X", abs(ObjectIdentifier(self).hashValue) & 0xFFFF)
         let microAttrs: [NSAttributedString.Key: Any] = [
-            .font: NSFont(name: "ShareTechMono-Regular", size: 9) ?? NSFont.monospacedSystemFont(ofSize: 9, weight: .regular),
-            .foregroundColor: NSColor(red: 0.20, green: 0.85, blue: 1.0, alpha: 0.40),
+            .font: Theme.Font.body(size: Theme.Font.microReadoutSize),
+            .foregroundColor: Theme.Palette.textMicroReadout,
             .paragraphStyle: { let p = NSMutableParagraphStyle(); p.alignment = .right; return p }()
         ]
         attributed.append(NSAttributedString(string: "\n\(microID)", attributes: microAttrs))

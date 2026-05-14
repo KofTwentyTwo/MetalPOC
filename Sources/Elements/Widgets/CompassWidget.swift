@@ -3,8 +3,8 @@ import AppKit
 import simd
 
 final class CompassWidget: FramedHUDWidget {
-    var origin: SIMD2<Float> = SIMD2(0.050, 0.170)
-    var size:   SIMD2<Float> = SIMD2(0.220, 0.100)
+    var origin: SIMD2<Float> = Theme.Layout.compass.origin
+    var size:   SIMD2<Float> = Theme.Layout.compass.size
 
     private struct Uniforms {
         var resolution: SIMD2<Float>
@@ -18,12 +18,12 @@ final class CompassWidget: FramedHUDWidget {
     }
 
     private var headingDeg: Float = 27   // bearing in degrees, 0..360
-    private var driftRate: Float = 3     // deg/sec average rotation
+    private var driftRate: Float = Theme.Tick.compassDriftDegPerSec
     var revealDelay: Float = 0
     private var revealStart: Float = -1
 
     private var timeSinceUpdate: Float = 0
-    private let updateInterval: Float = 0.25  // 4 Hz redraw
+    private let updateInterval: Float = Theme.Tick.compassRedrawSec
     private var lastChangeTime: Float = -999
 
     private var textTexture: MTLTexture?
@@ -57,13 +57,13 @@ final class CompassWidget: FramedHUDWidget {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
 
-        let bodyFont  = NSFont(name: "ShareTechMono-Regular", size: 12) ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .medium)
-        let titleFont = NSFont(name: "Orbitron-Bold", size: 13) ?? NSFont.monospacedSystemFont(ofSize: 13, weight: .bold)
+        let bodyFont  = Theme.Font.body(size: Theme.Font.compassBodySize)
+        let titleFont = Theme.Font.title(size: Theme.Font.widgetTitleSize)
         let titleAttrs: [NSAttributedString.Key: Any] = [
-            .font: titleFont, .foregroundColor: NSColor.white
+            .font: titleFont, .foregroundColor: Theme.Palette.textWhite
         ]
         let bodyAttrs: [NSAttributedString.Key: Any] = [
-            .font: bodyFont, .foregroundColor: NSColor.white
+            .font: bodyFont, .foregroundColor: Theme.Palette.textWhite
         ]
         // Build a "tape" of bearings centered on the current heading: show 9 segments,
         // each 10° apart, with the center highlighted.
@@ -79,8 +79,8 @@ final class CompassWidget: FramedHUDWidget {
         let bodyText = "\(String(format: "%05.1f° %@", headingDeg, cardinal(for: headingDeg)))\n\(tape.trimmingCharacters(in: .whitespaces))"
         let microID = String(format: "0x%04X", abs(ObjectIdentifier(self).hashValue) & 0xFFFF)
         let microAttrs: [NSAttributedString.Key: Any] = [
-            .font: NSFont(name: "ShareTechMono-Regular", size: 9) ?? NSFont.monospacedSystemFont(ofSize: 9, weight: .regular),
-            .foregroundColor: NSColor(red: 0.20, green: 0.85, blue: 1.0, alpha: 0.40),
+            .font: Theme.Font.body(size: Theme.Font.microReadoutSize),
+            .foregroundColor: Theme.Palette.textMicroReadout,
             .paragraphStyle: { let p = NSMutableParagraphStyle(); p.alignment = .right; return p }()
         ]
         let attributed = NSMutableAttributedString()
@@ -101,7 +101,7 @@ final class CompassWidget: FramedHUDWidget {
             resolution: context.resolution,
             origin: origin,
             size: size,
-            tint: SIMD4<Float>(0.20, 0.85, 1.0, 1.0),
+            tint: Theme.Palette.cyanTint,
             frameAlpha: 0.8,
             textAlpha: 1.0,
             time: context.time,

@@ -3,8 +3,8 @@ import AppKit
 import simd
 
 final class TaskListWidget: FramedHUDWidget {
-    var origin: SIMD2<Float> = SIMD2(0.690, 0.290)
-    var size:   SIMD2<Float> = SIMD2(0.260, 0.470)
+    var origin: SIMD2<Float> = Theme.Layout.taskList.origin
+    var size:   SIMD2<Float> = Theme.Layout.taskList.size
 
     private struct Uniforms {
         var resolution: SIMD2<Float>
@@ -38,7 +38,7 @@ final class TaskListWidget: FramedHUDWidget {
     private var revealStart: Float = -1
 
     private var timeSinceFlip: Float = 0
-    private let flipInterval: Float = 8.0
+    private let flipInterval: Float = Theme.Tick.taskShuffleIntervalSec
     private var lastChangeTime: Float = -999
     private var textTexture: MTLTexture?
     private var textDirty = true
@@ -54,7 +54,7 @@ final class TaskListWidget: FramedHUDWidget {
         }
         // Progress animates continuously on the active task.
         if let activeIdx = tasks.firstIndex(where: { $0.status == "ACTIVE" }) {
-            tasks[activeIdx].progress = min(1.0, tasks[activeIdx].progress + context.deltaTime * 0.04)
+            tasks[activeIdx].progress = min(1.0, tasks[activeIdx].progress + context.deltaTime * Theme.Tick.taskActiveProgressPerSec)
             if tasks[activeIdx].progress >= 1.0 {
                 tasks[activeIdx].status = "DONE"
                 if let nextIdx = tasks.firstIndex(where: { $0.status == "PENDING" }) {
@@ -99,14 +99,14 @@ final class TaskListWidget: FramedHUDWidget {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
 
-        let font = NSFont(name: "ShareTechMono-Regular", size: 11) ?? NSFont.monospacedSystemFont(ofSize: 11, weight: .regular)
+        let font = Theme.Font.body(size: Theme.Font.taskBodySize)
         let paragraph = NSMutableParagraphStyle()
         paragraph.lineSpacing = 3
 
         let attributed = NSMutableAttributedString()
         let header: [NSAttributedString.Key: Any] = [
-            .font: NSFont(name: "Orbitron-Bold", size: 13) ?? NSFont.monospacedSystemFont(ofSize: 13, weight: .bold),
-            .foregroundColor: NSColor.white,
+            .font: Theme.Font.title(size: Theme.Font.widgetTitleSize),
+            .foregroundColor: Theme.Palette.textWhite,
             .paragraphStyle: paragraph
         ]
         attributed.append(NSAttributedString(string: "[ OPEN TASKS ]\n", attributes: header))
@@ -114,10 +114,10 @@ final class TaskListWidget: FramedHUDWidget {
         for task in tasks {
             let color: NSColor
             switch task.status {
-            case "DONE":    color = NSColor(white: 0.55, alpha: 1.0)
-            case "ACTIVE":  color = NSColor(red: 0.6, green: 1.0, blue: 0.8, alpha: 1.0)
-            case "BLOCKED": color = NSColor(red: 1.0, green: 0.55, blue: 0.55, alpha: 1.0)
-            default:        color = NSColor.white
+            case "DONE":    color = Theme.Palette.textTaskDone
+            case "ACTIVE":  color = Theme.Palette.textTaskActive
+            case "BLOCKED": color = Theme.Palette.textTaskBlocked
+            default:        color = Theme.Palette.textWhite
             }
             let dot: String
             switch task.status {
@@ -137,8 +137,8 @@ final class TaskListWidget: FramedHUDWidget {
 
         let microID = String(format: "0x%04X", abs(ObjectIdentifier(self).hashValue) & 0xFFFF)
         let microAttrs: [NSAttributedString.Key: Any] = [
-            .font: NSFont(name: "ShareTechMono-Regular", size: 9) ?? NSFont.monospacedSystemFont(ofSize: 9, weight: .regular),
-            .foregroundColor: NSColor(red: 0.20, green: 0.85, blue: 1.0, alpha: 0.40),
+            .font: Theme.Font.body(size: Theme.Font.microReadoutSize),
+            .foregroundColor: Theme.Palette.textMicroReadout,
             .paragraphStyle: { let p = NSMutableParagraphStyle(); p.alignment = .right; return p }()
         ]
         attributed.append(NSAttributedString(string: "\n\(microID)", attributes: microAttrs))

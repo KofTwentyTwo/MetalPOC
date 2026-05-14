@@ -3,7 +3,7 @@ import simd
 
 final class OrbElement: HUDElement {
     /// Orb radius in normalized vertical-axis units. Spec §7 wants the orb to read as the visual hero.
-    var radius: Float = 0.18
+    var radius: Float = Theme.Orb.radius
 
     private struct Uniforms {
         var resolution: SIMD2<Float>
