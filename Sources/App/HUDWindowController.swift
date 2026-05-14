@@ -48,13 +48,13 @@ final class HUDWindowController: NSWindowController {
                 height: CGFloat(framed.size.y) * sz.height
             )
             let backdrop = NSVisualEffectView(frame: widgetRect)
-            // .sidebar + vibrantLight gives the classic Apple frosted-glass look:
-            // lighter overall tint, more transparent than fullScreenUI, with the
-            // heavier gaussian blur that sidebars and popovers use.
-            backdrop.material = .sidebar
+            // Jarvis-style dark frosted glass: .hudWindow + explicit vibrantDark gives a
+            // tinted-dark backdrop with heavy gaussian blur — translucent enough to see
+            // the desktop showing through, but dark enough to keep the HUD aesthetic.
+            backdrop.material = .hudWindow
             backdrop.blendingMode = .behindWindow
             backdrop.state = .active
-            backdrop.appearance = NSAppearance(named: .vibrantLight)
+            backdrop.appearance = NSAppearance(named: .vibrantDark)
             backdrop.wantsLayer = true
             backdrop.autoresizingMask = []
             // Compute chamfer leg in NSView points to match the Metal shader exactly.
