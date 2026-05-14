@@ -74,7 +74,9 @@ final class ScheduleStripWidget: FramedHUDWidget {
         let widthPts  = CGFloat(size.x) * CGFloat(context.resolution.x) / CGFloat(context.scaleFactor)
         let heightPts = CGFloat(size.y) * CGFloat(context.resolution.y) / CGFloat(context.scaleFactor)
 
-        let font = NSFont(name: "ShareTechMono-Regular", size: 13) ?? NSFont.monospacedSystemFont(ofSize: 13, weight: .medium)
+        // Sized to fill the widget body height after inset (~60pt usable on the
+        // 76pt strip — 36pt font reads as the dominant content).
+        let font = NSFont(name: "ShareTechMono-Regular", size: 36) ?? NSFont.monospacedSystemFont(ofSize: 36, weight: .medium)
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
         let attributed = NSMutableAttributedString()
