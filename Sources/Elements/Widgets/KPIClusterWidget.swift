@@ -22,6 +22,7 @@ final class KPIClusterWidget: HUDElement {
         var label: String
         var value: Float    // 0..100
         var unit: String
+        var history: [Float] = []
     }
 
     private var kpis: [KPI] = [
@@ -55,6 +56,8 @@ final class KPIClusterWidget: HUDElement {
         for i in kpis.indices {
             let drift = Float.random(in: -3.5...3.5)
             kpis[i].value = min(99, max(1, kpis[i].value + drift))
+            kpis[i].history.append(kpis[i].value)
+            if kpis[i].history.count > 20 { kpis[i].history.removeFirst() }
         }
     }
 
@@ -98,11 +101,36 @@ final class KPIClusterWidget: HUDElement {
         attributed.append(NSAttributedString(string: lines.joined(separator: "\n"), attributes: bodyAttrs))
         attributed.append(NSAttributedString(string: "\n\(microID)", attributes: microAttrs))
 
+        let kpisCopy = kpis  // capture for closure
         textTexture = context.textRasterizer.rasterize(
             attributed,
             maxSize: CGSize(width: widthPts, height: heightPts),
             scale: CGFloat(context.scaleFactor)
-        )
+        ) { ctx, size in
+            // Draw sparklines for each KPI row on the right side.
+            let titleHeight: CGFloat = 20  // approx space for title line
+            let lineHeight: CGFloat = 16   // approx per-row height
+            let sparkW: CGFloat = 56       // width of sparkline area
+            let sparkH: CGFloat = 9        // height of sparkline
+            let sparkX: CGFloat = size.width - sparkW - 4  // right-aligned with small margin
+            ctx.setStrokeColor(NSColor(red: 0.20, green: 0.85, blue: 1.0, alpha: 0.65).cgColor)
+            ctx.setLineWidth(0.75)
+            ctx.setLineJoin(.round)
+            for (i, kpi) in kpisCopy.enumerated() where kpi.history.count >= 2 {
+                let rowY = titleHeight + CGFloat(i) * lineHeight + 3
+                let pts = kpi.history.enumerated().map { (idx, val) -> CGPoint in
+                    let x = sparkX + (CGFloat(idx) / CGFloat(max(kpi.history.count - 1, 1))) * sparkW
+                    let norm = CGFloat(min(max(val / 100.0, 0.0), 1.0))
+                    // CGContext y-down: rowY is top of row, sparkH down from there
+                    let y = rowY + (1.0 - norm) * sparkH
+                    return CGPoint(x: x, y: y)
+                }
+                ctx.beginPath()
+                ctx.move(to: pts[0])
+                for p in pts.dropFirst() { ctx.addLine(to: p) }
+                ctx.strokePath()
+            }
+        }
     }
 
     func encode(into encoder: MTLRenderCommandEncoder, context: FrameContext) {

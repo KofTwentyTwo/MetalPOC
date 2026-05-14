@@ -72,6 +72,66 @@ final class TextRasterizer {
         return texture
     }
 
+    /// Rasterize `string` then call `extraDraw(ctx, maxSize)` into the same CGContext before
+    /// uploading to a Metal texture. Use for overlaying sparklines or other CG graphics.
+    func rasterize(
+        _ string: NSAttributedString,
+        maxSize: CGSize,
+        scale: CGFloat,
+        extraDraw: (CGContext, CGSize) -> Void
+    ) -> MTLTexture? {
+        let pixelWidth  = max(Int((maxSize.width  * scale).rounded(.up)), 1)
+        let pixelHeight = max(Int((maxSize.height * scale).rounded(.up)), 1)
+        let bytesPerRow = pixelWidth * 4
+
+        guard let context = CGContext(
+            data: nil,
+            width: pixelWidth,
+            height: pixelHeight,
+            bitsPerComponent: 8,
+            bytesPerRow: bytesPerRow,
+            space: colorSpace,
+            bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue
+                       | CGImageAlphaInfo.premultipliedFirst.rawValue
+        ) else { return nil }
+
+        context.scaleBy(x: scale, y: scale)
+        context.setShouldAntialias(true)
+        context.setShouldSmoothFonts(true)
+
+        let framesetter = CTFramesetterCreateWithAttributedString(string)
+        let path = CGPath(rect: CGRect(origin: .zero, size: maxSize), transform: nil)
+        let frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, nil)
+        context.translateBy(x: 0, y: maxSize.height)
+        context.scaleBy(x: 1, y: -1)
+        CTFrameDraw(frame, context)
+        context.scaleBy(x: 1, y: -1)
+        context.translateBy(x: 0, y: -maxSize.height)
+
+        // Run extra drawing (e.g. sparklines) into the same CGContext.
+        extraDraw(context, maxSize)
+
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: .bgra8Unorm,
+            width: pixelWidth,
+            height: pixelHeight,
+            mipmapped: false
+        )
+        descriptor.usage = [.shaderRead]
+        descriptor.storageMode = .shared
+
+        guard let texture = device.makeTexture(descriptor: descriptor),
+              let data = context.data else { return nil }
+
+        texture.replace(
+            region: MTLRegionMake2D(0, 0, pixelWidth, pixelHeight),
+            mipmapLevel: 0,
+            withBytes: data,
+            bytesPerRow: bytesPerRow
+        )
+        return texture
+    }
+
     /// Convenience: rasterize a plain `String` with the supplied font and color.
     func rasterize(
         _ text: String,
