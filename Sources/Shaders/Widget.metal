@@ -84,8 +84,9 @@ fragment float4 widget_fragment(WidgetVertexOut in [[stage_in]],
     float dBorder = abs(dShaped + 0.0008) - 0.0010;
 
     float aa = 2.0 / u.resolution.y;
-    float frameMask = max(aaEdge(dBorder, aa),
-                          softGlow(dBorder, 0.004) * 0.4);
+    // No softGlow halo on the frame line — it was bleeding outside the chamfered shape
+    // and reading as a "shadow" against the dark blurred backdrop. Crisp AA edge only.
+    float frameMask = aaEdge(dBorder, aa);
     // Reactive flash: very subtle brightness boost when content changes (dialed down from
     // earlier values that were WAY too bright — at 0.6/1.5 the whole HUD strobed).
     float flashBoost = exp(-u.flashAge * 6.0) * 0.08;
