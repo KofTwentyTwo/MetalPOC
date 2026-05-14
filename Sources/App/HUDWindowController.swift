@@ -48,12 +48,13 @@ final class HUDWindowController: NSWindowController {
                 height: CGFloat(framed.size.y) * sz.height
             )
             let backdrop = NSVisualEffectView(frame: widgetRect)
-            // .fullScreenUI is a darker, flatter material than .hudWindow, which has a
-            // baked-in lighter rim along its top edge. Flat keeps the visible widget
-            // boundary aligned with the Metal frame line.
-            backdrop.material = .fullScreenUI
+            // .sidebar + vibrantLight gives the classic Apple frosted-glass look:
+            // lighter overall tint, more transparent than fullScreenUI, with the
+            // heavier gaussian blur that sidebars and popovers use.
+            backdrop.material = .sidebar
             backdrop.blendingMode = .behindWindow
             backdrop.state = .active
+            backdrop.appearance = NSAppearance(named: .vibrantLight)
             backdrop.wantsLayer = true
             backdrop.autoresizingMask = []
             // Compute chamfer leg in NSView points to match the Metal shader exactly.
