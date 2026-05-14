@@ -4,8 +4,8 @@ import simd
 
 final class KPIClusterWidget: HUDElement {
     // Screen-normalized [0..1] origin and size (bottom-left origin).
-    var origin: SIMD2<Float> = SIMD2(0.030, 0.870)
-    var size:   SIMD2<Float> = SIMD2(0.180, 0.110)
+    var origin: SIMD2<Float> = SIMD2(0.050, 0.780)
+    var size:   SIMD2<Float> = SIMD2(0.190, 0.110)
 
     private struct Uniforms {
         var resolution: SIMD2<Float>

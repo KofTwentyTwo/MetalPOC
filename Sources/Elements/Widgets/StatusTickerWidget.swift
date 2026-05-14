@@ -3,8 +3,8 @@ import AppKit
 import simd
 
 final class StatusTickerWidget: HUDElement {
-    var origin: SIMD2<Float> = SIMD2(0.030, 0.010)
-    var size:   SIMD2<Float> = SIMD2(0.940, 0.030)
+    var origin: SIMD2<Float> = SIMD2(0.050, 0.055)
+    var size:   SIMD2<Float> = SIMD2(0.900, 0.025)
 
     private struct Uniforms {
         var resolution: SIMD2<Float>

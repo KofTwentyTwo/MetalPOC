@@ -3,8 +3,8 @@ import AppKit
 import simd
 
 final class LLMTelemetryWidget: HUDElement {
-    var origin: SIMD2<Float> = SIMD2(0.790, 0.860)
-    var size:   SIMD2<Float> = SIMD2(0.180, 0.120)
+    var origin: SIMD2<Float> = SIMD2(0.760, 0.770)
+    var size:   SIMD2<Float> = SIMD2(0.190, 0.120)
 
     private struct Uniforms {
         var resolution: SIMD2<Float>

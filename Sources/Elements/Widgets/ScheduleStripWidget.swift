@@ -3,8 +3,8 @@ import AppKit
 import simd
 
 final class ScheduleStripWidget: HUDElement {
-    var origin: SIMD2<Float> = SIMD2(0.290, 0.060)
-    var size:   SIMD2<Float> = SIMD2(0.420, 0.060)
+    var origin: SIMD2<Float> = SIMD2(0.300, 0.090)
+    var size:   SIMD2<Float> = SIMD2(0.400, 0.045)
 
     private struct Uniforms {
         var resolution: SIMD2<Float>

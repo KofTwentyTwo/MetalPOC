@@ -3,8 +3,8 @@ import AppKit
 import simd
 
 final class CompassWidget: HUDElement {
-    var origin: SIMD2<Float> = SIMD2(0.030, 0.110)
-    var size:   SIMD2<Float> = SIMD2(0.180, 0.100)
+    var origin: SIMD2<Float> = SIMD2(0.050, 0.170)
+    var size:   SIMD2<Float> = SIMD2(0.190, 0.100)
 
     private struct Uniforms {
         var resolution: SIMD2<Float>
