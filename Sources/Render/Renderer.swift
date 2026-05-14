@@ -14,8 +14,11 @@ final class Renderer: NSObject, MTKViewDelegate {
     // Glitch post-process state
     private var intermediateTexture: MTLTexture?
     private var intermediateSize: CGSize = .zero
-    // Glitch fires every ~12s for a brief burst (fade over ~0.15s).
-    private let glitchPeriod: Float = 12.0
+    // Glitch fires at a random interval averaging ~10 minutes (range 8–12 min).
+    // Brief burst — fades over ~0.15s.
+    private var nextGlitchAt: Float = .random(in: 480...720)  // 8–12 min from launch
+    private var lastGlitchFiredAt: Float = -1
+    private let glitchBurstDuration: Float = 0.15
 
     init?(view: MTKView) {
         guard let device = view.device,
@@ -83,11 +86,25 @@ final class Renderer: NSObject, MTKViewDelegate {
             return
         }
 
-        // Compute glitch amount: once per glitchPeriod, a 1-frame pulse.
-        // glitchPhase ∈ [0,1) — when near 0 we fire the effect.
-        let glitchPhase = elapsed.truncatingRemainder(dividingBy: glitchPeriod) / glitchPeriod
-        // Fire window: 0..0.012 within each period (~150ms window at 12s period).
-        let glitchAmount: Float = glitchPhase < 0.012 ? (1.0 - glitchPhase / 0.012) : 0.0
+        // Compute glitch amount: fires once per scheduled interval, fading over
+        // `glitchBurstDuration`. After firing, schedule the next at a fresh random time.
+        let glitchAmount: Float
+        if elapsed >= nextGlitchAt {
+            if lastGlitchFiredAt < 0 || (elapsed - lastGlitchFiredAt) > glitchBurstDuration {
+                // First moment we cross the threshold — record fire time.
+                lastGlitchFiredAt = elapsed
+            }
+            let burstAge = elapsed - lastGlitchFiredAt
+            if burstAge < glitchBurstDuration {
+                glitchAmount = 1.0 - (burstAge / glitchBurstDuration)
+            } else {
+                // Burst finished — schedule next glitch 8–12 min from now.
+                nextGlitchAt = elapsed + .random(in: 480...720)
+                glitchAmount = 0
+            }
+        } else {
+            glitchAmount = 0
+        }
 
         if glitchAmount > 0.01 {
             // Two-pass: render scene to intermediate, then apply glitch to drawable.

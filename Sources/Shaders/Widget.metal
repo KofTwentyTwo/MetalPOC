@@ -64,8 +64,10 @@ fragment float4 widget_fragment(WidgetVertexOut in [[stage_in]],
 
     float dBox = sdBox(px, half_);
 
-    // Chamfer TL and BR corners at 45°.  notchSize = 10% of the smaller half.
-    float notchSize = min(half_.x, half_.y) * 0.10;
+    // Chamfer TL and BR corners at 45°. notchSize = 4% of the smaller half — small
+    // enough that it doesn't intrude into the title-text area, which is what made the
+    // text look like it was "outside" the frame at the previous 10% setting.
+    float notchSize = min(half_.x, half_.y) * 0.04;
 
     // Top-left chamfer: the corner where px.x ~ -half_.x AND px.y ~ +half_.y
     // Cut plane: a diagonal line whose normal points into (1, -1) direction
@@ -84,10 +86,11 @@ fragment float4 widget_fragment(WidgetVertexOut in [[stage_in]],
     float aa = 2.0 / u.resolution.y;
     float frameMask = max(aaEdge(dBorder, aa),
                           softGlow(dBorder, 0.004) * 0.4);
-    // Reactive flash: brief brightness boost when content changes.
-    float flashBoost = exp(-u.flashAge * 6.0) * 0.6;
-    float flashedFrameMask = frameMask * (1.0 + flashBoost * 1.5);
-    float3 frameColor = kBrightCyan * flashedFrameMask + kBrightCyan * frameMask * flashBoost;
+    // Reactive flash: very subtle brightness boost when content changes (dialed down from
+    // earlier values that were WAY too bright — at 0.6/1.5 the whole HUD strobed).
+    float flashBoost = exp(-u.flashAge * 6.0) * 0.08;
+    float flashedFrameMask = frameMask * (1.0 + flashBoost * 0.25);
+    float3 frameColor = kBrightCyan * flashedFrameMask;
     float  frameAlpha = flashedFrameMask * u.frameAlpha;
 
     // -------------------------------------------------------------------------
@@ -125,20 +128,12 @@ fragment float4 widget_fragment(WidgetVertexOut in [[stage_in]],
     }
 
     // -------------------------------------------------------------------------
-    // Header divider line just below the title row (at ~22% from top in uv-space).
-    // uv.y = 0 is bottom, 1 is top; so 0.78 means 22% from the top.
+    // Pulsing LED at top-left corner of widget body (no divider line — the divider
+    // was being read as a false "top of the box" with title text appearing above it).
     // -------------------------------------------------------------------------
     if (interiorMask > 0.5) {
-        float divY = 0.78;
-        float divThick = 0.005;
-        float divider = smoothstep(divThick, 0.0, abs(in.uv.y - divY)) * 0.7;
-        color += kCyan * divider;
-        alpha = max(alpha, divider);
-
-        // Pulsing LED at top-left corner of widget body
         float2 ledPos = float2(0.035, 0.91);
         float ledRadius = 0.012;
-        // Aspect-correct in widget local space
         float widgetAspect = (u.size.x * u.resolution.x) / (u.size.y * u.resolution.y);
         float2 ledDelta = (in.uv - ledPos) * float2(widgetAspect, 1.0);
         float ledD = length(ledDelta);
@@ -146,7 +141,6 @@ fragment float4 widget_fragment(WidgetVertexOut in [[stage_in]],
         float ledMask = smoothstep(ledRadius, ledRadius * 0.5, ledD) * pulse;
         color += kBrightCyan * ledMask;
         alpha = max(alpha, ledMask);
-        // Subtle halo around LED
         float ledHalo = exp(-ledD / (ledRadius * 1.5)) * pulse * 0.4;
         color += kBrightCyan * ledHalo;
         alpha = max(alpha, ledHalo);
