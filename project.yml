@@ -34,6 +34,9 @@ targets:
         NSPrincipalClass: NSApplication
         LSUIElement: true
         ATSApplicationFontsPath: ""
+        NSLocationUsageDescription: "MetalPOC displays your approximate location on the HUD."
+        NSLocationWhenInUseUsageDescription: "MetalPOC displays your approximate location on the HUD."
+        NSLocationAlwaysAndWhenInUseUsageDescription: "MetalPOC displays your approximate location on the HUD."
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.dmdbrands.MetalPOC

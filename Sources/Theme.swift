@@ -46,6 +46,7 @@ enum Theme {
         static let networkTopology = WidgetFrame(origin: SIMD2(0.050, 0.290), size: SIMD2(0.260, 0.180))
         static let forceGraph      = WidgetFrame(origin: SIMD2(0.690, 0.300), size: SIMD2(0.260, 0.300))
         static let wireframeModel  = WidgetFrame(origin: SIMD2(0.430, 0.730), size: SIMD2(0.140, 0.140))
+        static let localNetwork    = WidgetFrame(origin: SIMD2(0.330, 0.150), size: SIMD2(0.340, 0.135))
     }
 
     // MARK: - Fonts
@@ -144,6 +145,20 @@ enum Theme {
         static let networkTopology: Float = 1.9
         static let forceGraph:      Float = 2.1
         static let wireframeModel:  Float = 2.3
+        static let localNetwork:    Float = 1.5
+    }
+
+    // MARK: - Local Network widget config
+
+    enum LocalNetwork {
+        /// Case-insensitive substrings used to identify "the user's phone" in Bonjour names.
+        /// Edit this to match your phone's iCloud/Bluetooth name (e.g. "James", "iPhone").
+        static let myPhoneNamePatterns: [String] = ["iPhone", "James"]
+        /// Max number of devices to display in the body of the widget.
+        static let maxDevicesShown: Int = 8
+        /// Widget refresh rate (the Bonjour scanner runs continuously; this only controls
+        /// how often the rasterized text is rebuilt).
+        static let refreshSec: Float = 1.0
     }
 
     // MARK: - Orb

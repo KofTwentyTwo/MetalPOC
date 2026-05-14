@@ -33,6 +33,9 @@ final class HUDWindowController: NSWindowController {
     private let networkTopology: NetworkTopologyWidget
     private let wireframeModel: WireframeModelWidget
 
+    // Real-data widgets
+    private let localNetwork: LocalNetworkWidget
+
     init() {
         let screenFrame = (NSScreen.main ?? NSScreen.screens.first!).frame
         self.hudView = HUDView(frame: NSRect(origin: .zero, size: screenFrame.size))
@@ -51,6 +54,7 @@ final class HUDWindowController: NSWindowController {
         let forceGraph_ = ForceGraphWidget();             forceGraph_.revealDelay = Theme.Reveal.forceGraph
         let networkTopology_ = NetworkTopologyWidget();   networkTopology_.revealDelay = Theme.Reveal.networkTopology
         let wireframeModel_ = WireframeModelWidget();     wireframeModel_.revealDelay = Theme.Reveal.wireframeModel
+        let localNetwork_ = LocalNetworkWidget();         localNetwork_.revealDelay = Theme.Reveal.localNetwork
 
         self.kpi = kpi_
         self.llm = llm_
@@ -63,13 +67,14 @@ final class HUDWindowController: NSWindowController {
         self.forceGraph = forceGraph_
         self.networkTopology = networkTopology_
         self.wireframeModel = wireframeModel_
+        self.localNetwork = localNetwork_
 
         super.init(window: hudWindow)
 
         // Collect all framed widgets to build backdrops.
         let framedWidgets: [HUDElement] = [
             kpi, llm, clocks, log, tasks, compass, schedule, ticker,
-            forceGraph, networkTopology, wireframeModel
+            forceGraph, networkTopology, wireframeModel, localNetwork
         ]
 
         let container = hudWindow.containerView
@@ -147,7 +152,7 @@ final class HUDWindowController: NSWindowController {
                 vitalsWidget,
                 spectrumWidget,
                 kpi, llm, clocks, log, tasks, compass, schedule, ticker,
-                forceGraph, networkTopology, wireframeModel
+                forceGraph, networkTopology, wireframeModel, localNetwork
             ]
             for v in backdropViews { v.isHidden = false }
             hudWindow.orderFrontRegardless()

@@ -28,6 +28,12 @@
 	<true/>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>MetalPOC displays your approximate location on the HUD.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>MetalPOC displays your approximate location on the HUD.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>MetalPOC displays your approximate location on the HUD.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>
