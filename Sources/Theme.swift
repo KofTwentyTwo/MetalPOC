@@ -42,6 +42,10 @@ enum Theme {
         static let compass       = WidgetFrame(origin: SIMD2(0.050, 0.170), size: SIMD2(0.220, 0.100))
         static let scheduleStrip = WidgetFrame(origin: SIMD2(0.300, 0.090), size: SIMD2(0.400, 0.045))
         static let statusTicker  = WidgetFrame(origin: SIMD2(0.050, 0.055), size: SIMD2(0.900, 0.025))
+        // New procedural widgets
+        static let networkTopology = WidgetFrame(origin: SIMD2(0.050, 0.290), size: SIMD2(0.260, 0.180))
+        static let forceGraph      = WidgetFrame(origin: SIMD2(0.690, 0.300), size: SIMD2(0.260, 0.300))
+        static let wireframeModel  = WidgetFrame(origin: SIMD2(0.430, 0.730), size: SIMD2(0.140, 0.140))
     }
 
     // MARK: - Fonts
@@ -119,6 +123,11 @@ enum Theme {
 
         // Boot-up sequence stagger (per-widget reveal delay)
         static let widgetRevealStagger: Float = 0.2
+
+        // New procedural widget rates
+        static let forceGraphPhysicsHz: Float = 60
+        static let topologyFlowSpeedPerSec: Float = 0.4
+        static let modelRotationDegPerSec: Float = 18
     }
 
     // MARK: - Per-widget reveal delays (staggered boot-up sequence)
@@ -132,6 +141,9 @@ enum Theme {
         static let compass:       Float = 1.3
         static let scheduleStrip: Float = 1.5
         static let statusTicker:  Float = 1.7
+        static let networkTopology: Float = 1.9
+        static let forceGraph:      Float = 2.1
+        static let wireframeModel:  Float = 2.3
     }
 
     // MARK: - Orb

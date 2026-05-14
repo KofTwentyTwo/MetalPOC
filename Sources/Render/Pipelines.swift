@@ -7,6 +7,9 @@ final class Pipelines {
     let vitals: MTLRenderPipelineState
     let spectrum: MTLRenderPipelineState
     let glitch: MTLRenderPipelineState
+    let graph: MTLRenderPipelineState
+    let topology: MTLRenderPipelineState
+    let model: MTLRenderPipelineState
 
     init(device: MTLDevice, library: MTLLibrary, colorPixelFormat: MTLPixelFormat) throws {
         self.ornament = try Pipelines.makePipeline(
@@ -33,6 +36,21 @@ final class Pipelines {
             device: device, library: library, colorPixelFormat: colorPixelFormat,
             vertexFunctionName: "spectrum_vertex", fragmentFunctionName: "spectrum_fragment",
             label: "SpectrumPipeline")
+
+        self.graph = try Pipelines.makePipeline(
+            device: device, library: library, colorPixelFormat: colorPixelFormat,
+            vertexFunctionName: "graph_vertex", fragmentFunctionName: "graph_fragment",
+            label: "GraphPipeline")
+
+        self.topology = try Pipelines.makePipeline(
+            device: device, library: library, colorPixelFormat: colorPixelFormat,
+            vertexFunctionName: "topology_vertex", fragmentFunctionName: "topology_fragment",
+            label: "TopologyPipeline")
+
+        self.model = try Pipelines.makePipeline(
+            device: device, library: library, colorPixelFormat: colorPixelFormat,
+            vertexFunctionName: "model_vertex", fragmentFunctionName: "model_fragment",
+            label: "ModelPipeline")
 
         // Glitch post-process: draws to the drawable using .bgra8Unorm since it
         // samples from the intermediate texture (not blended over transparency).

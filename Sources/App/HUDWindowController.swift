@@ -28,6 +28,11 @@ final class HUDWindowController: NSWindowController {
     private let schedule: ScheduleStripWidget
     private let ticker: StatusTickerWidget
 
+    // New procedural framed widgets
+    private let forceGraph: ForceGraphWidget
+    private let networkTopology: NetworkTopologyWidget
+    private let wireframeModel: WireframeModelWidget
+
     init() {
         let screenFrame = (NSScreen.main ?? NSScreen.screens.first!).frame
         self.hudView = HUDView(frame: NSRect(origin: .zero, size: screenFrame.size))
@@ -43,6 +48,10 @@ final class HUDWindowController: NSWindowController {
         let schedule_ = ScheduleStripWidget(); schedule_.revealDelay = Theme.Reveal.scheduleStrip
         let ticker_ = StatusTickerWidget();    ticker_.revealDelay = Theme.Reveal.statusTicker
 
+        let forceGraph_ = ForceGraphWidget();             forceGraph_.revealDelay = Theme.Reveal.forceGraph
+        let networkTopology_ = NetworkTopologyWidget();   networkTopology_.revealDelay = Theme.Reveal.networkTopology
+        let wireframeModel_ = WireframeModelWidget();     wireframeModel_.revealDelay = Theme.Reveal.wireframeModel
+
         self.kpi = kpi_
         self.llm = llm_
         self.clocks = clocks_
@@ -51,11 +60,17 @@ final class HUDWindowController: NSWindowController {
         self.compass = compass_
         self.schedule = schedule_
         self.ticker = ticker_
+        self.forceGraph = forceGraph_
+        self.networkTopology = networkTopology_
+        self.wireframeModel = wireframeModel_
 
         super.init(window: hudWindow)
 
         // Collect all framed widgets to build backdrops.
-        let framedWidgets: [HUDElement] = [kpi, llm, clocks, log, tasks, compass, schedule, ticker]
+        let framedWidgets: [HUDElement] = [
+            kpi, llm, clocks, log, tasks, compass, schedule, ticker,
+            forceGraph, networkTopology, wireframeModel
+        ]
 
         let container = hudWindow.containerView
         let sz = screenFrame.size
@@ -131,7 +146,8 @@ final class HUDWindowController: NSWindowController {
                 orbElement,
                 vitalsWidget,
                 spectrumWidget,
-                kpi, llm, clocks, log, tasks, compass, schedule, ticker
+                kpi, llm, clocks, log, tasks, compass, schedule, ticker,
+                forceGraph, networkTopology, wireframeModel
             ]
             for v in backdropViews { v.isHidden = false }
             hudWindow.orderFrontRegardless()
