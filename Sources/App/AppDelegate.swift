@@ -10,7 +10,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         hud.showWindow(nil)
 
         let status = StatusItemController()
-        status.onToggle = { [weak hud] in hud?.toggleVisibility() }
+        status.onToggle = { [weak hud] in hud?.cycleMode() }
         statusItem = status
     }
 }
