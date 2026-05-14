@@ -71,7 +71,11 @@ fragment float4 orb_fragment(OrbVertexOut in [[stage_in]],
     float coreFill = aaEdge(coreEdge, aa);
     float swirl = fbm(p * 6.0 + float2(u.time * 0.3, u.time * 0.2));
     float3 coreColor = mix(kCyan, kBrightCyan, swirl);
-    float coreIntensity = coreFill * (0.45 + 0.35 * swirl);
+    // Boost saturation: blend a more saturated cyan center against a darker rim falloff
+    float distFromCenter = clamp(r / u.radius, 0.0, 1.0);
+    float saturation = 1.0 - smoothstep(0.7, 1.0, distFromCenter) * 0.5;
+    coreColor *= saturation * 1.3;
+    float coreIntensity = coreFill * (0.55 + 0.45 * swirl);
     color += coreColor * coreIntensity;
     alpha = max(alpha, coreIntensity);
 
