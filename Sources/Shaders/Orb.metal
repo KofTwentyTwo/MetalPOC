@@ -6,6 +6,8 @@ struct OrbUniforms {
     float2 resolution;
     float time;
     float radius;       // orb radius in normalized vertical units
+    float2 center;      // aspect-adjusted NDC offset; (0,0) = screen center
+    float _pad;         // pad to 32-byte alignment
 };
 
 struct OrbVertexOut {
@@ -54,8 +56,7 @@ fragment float4 orb_fragment(OrbVertexOut in [[stage_in]],
     float aa = 2.0 / u.resolution.y;
     float2 p = in.ndc;
     p.x *= aspect;
-    // Center the orb on screen.
-    p.y -= 0.0;
+    p -= u.center;     // offset the orb from screen center
 
     float r = length(p);
     if (r > u.radius * 3.0) {

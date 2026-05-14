@@ -139,6 +139,11 @@ enum Theme {
     enum Orb {
         /// Orb radius in normalized vertical-axis units.
         static let radius: Float = 0.18
+        /// Lower-right corner position in aspect-adjusted NDC space.
+        /// x = (0.84 * aspect), y = -0.70  (aspect ≈ 1.778 for 16:9 / 6K displays).
+        static let compactCenter = SIMD2<Float>(0.84 * 1.778, -0.70)
+        /// Smaller radius in compact mode so it sits comfortably in the corner.
+        static let compactRadius: Float = 0.10
     }
 
     // MARK: - Backdrop (NSVisualEffectView + tint sublayer)
