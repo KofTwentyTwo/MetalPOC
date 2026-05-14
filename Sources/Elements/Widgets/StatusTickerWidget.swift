@@ -2,7 +2,7 @@ import Metal
 import AppKit
 import simd
 
-final class StatusTickerWidget: HUDElement {
+final class StatusTickerWidget: FramedHUDWidget {
     var origin: SIMD2<Float> = SIMD2(0.050, 0.055)
     var size:   SIMD2<Float> = SIMD2(0.900, 0.025)
 

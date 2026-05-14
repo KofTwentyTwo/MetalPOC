@@ -2,7 +2,7 @@ import Metal
 import AppKit
 import simd
 
-final class TaskListWidget: HUDElement {
+final class TaskListWidget: FramedHUDWidget {
     var origin: SIMD2<Float> = SIMD2(0.690, 0.290)
     var size:   SIMD2<Float> = SIMD2(0.260, 0.470)
 

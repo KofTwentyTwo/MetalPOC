@@ -2,9 +2,9 @@ import Metal
 import AppKit
 import simd
 
-final class LLMTelemetryWidget: HUDElement {
-    var origin: SIMD2<Float> = SIMD2(0.700, 0.770)
-    var size:   SIMD2<Float> = SIMD2(0.250, 0.120)
+final class LLMTelemetryWidget: FramedHUDWidget {
+    var origin: SIMD2<Float> = SIMD2(0.700, 0.810)
+    var size:   SIMD2<Float> = SIMD2(0.250, 0.080)
 
     private struct Uniforms {
         var resolution: SIMD2<Float>

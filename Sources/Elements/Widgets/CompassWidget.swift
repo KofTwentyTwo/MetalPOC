@@ -2,7 +2,7 @@ import Metal
 import AppKit
 import simd
 
-final class CompassWidget: HUDElement {
+final class CompassWidget: FramedHUDWidget {
     var origin: SIMD2<Float> = SIMD2(0.050, 0.170)
     var size:   SIMD2<Float> = SIMD2(0.220, 0.100)
 

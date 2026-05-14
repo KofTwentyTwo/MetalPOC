@@ -3,9 +3,9 @@ import AppKit
 import Foundation
 import simd
 
-final class LogStreamWidget: HUDElement {
-    var origin: SIMD2<Float> = SIMD2(0.050, 0.290)
-    var size:   SIMD2<Float> = SIMD2(0.260, 0.470)
+final class LogStreamWidget: FramedHUDWidget {
+    var origin: SIMD2<Float> = SIMD2(0.050, 0.500)
+    var size:   SIMD2<Float> = SIMD2(0.260, 0.260)
 
     private struct Uniforms {
         var resolution: SIMD2<Float>

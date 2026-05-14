@@ -2,7 +2,7 @@ import Metal
 import AppKit
 import simd
 
-final class ScheduleStripWidget: HUDElement {
+final class ScheduleStripWidget: FramedHUDWidget {
     var origin: SIMD2<Float> = SIMD2(0.300, 0.090)
     var size:   SIMD2<Float> = SIMD2(0.400, 0.045)
 

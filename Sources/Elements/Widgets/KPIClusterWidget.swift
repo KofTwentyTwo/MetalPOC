@@ -2,10 +2,10 @@ import Metal
 import AppKit
 import simd
 
-final class KPIClusterWidget: HUDElement {
+final class KPIClusterWidget: FramedHUDWidget {
     // Screen-normalized [0..1] origin and size (bottom-left origin).
-    var origin: SIMD2<Float> = SIMD2(0.050, 0.780)
-    var size:   SIMD2<Float> = SIMD2(0.250, 0.110)
+    var origin: SIMD2<Float> = SIMD2(0.050, 0.825)
+    var size:   SIMD2<Float> = SIMD2(0.250, 0.065)
 
     private struct Uniforms {
         var resolution: SIMD2<Float>
