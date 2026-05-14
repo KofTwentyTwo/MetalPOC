@@ -29,6 +29,9 @@ final class WorldClocksWidget: HUDElement {
         .init(label: "SYD", timeZoneID: "Australia/Sydney"),
     ]
 
+    var revealDelay: Float = 0
+    private var revealStart: Float = -1
+
     private var timeSinceUpdate: Float = 0
     private let updateInterval: Float = 1.0
     private var lastChangeTime: Float = -999
@@ -36,6 +39,8 @@ final class WorldClocksWidget: HUDElement {
     private var textDirty = true
 
     func update(context: FrameContext) {
+        if revealStart < 0 { revealStart = context.time + revealDelay }
+        if context.time < revealStart { return }
         timeSinceUpdate += context.deltaTime
         if timeSinceUpdate >= updateInterval {
             timeSinceUpdate = 0

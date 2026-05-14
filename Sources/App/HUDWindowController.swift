@@ -10,19 +10,23 @@ final class HUDWindowController: NSWindowController {
         self.hudWindow = HUDWindow(contentView: hudView)
         super.init(window: hudWindow)
 
+        // Staggered boot-up reveal: ornament/orb/rings appear immediately,
+        // text widgets pop in sequentially 200ms apart.
+        let kpi = KPIClusterWidget();          kpi.revealDelay = 0.3
+        let llm = LLMTelemetryWidget();        llm.revealDelay = 0.5
+        let clocks = WorldClocksWidget();      clocks.revealDelay = 0.7
+        let log = LogStreamWidget();           log.revealDelay = 0.9
+        let tasks = TaskListWidget();          tasks.revealDelay = 1.1
+        let compass = CompassWidget();         compass.revealDelay = 1.3
+        let schedule = ScheduleStripWidget();  schedule.revealDelay = 1.5
+        let ticker = StatusTickerWidget();     ticker.revealDelay = 1.7
+
         hudView.renderer.scene = [
             OrnamentElement(),
             OrbElement(),
             VitalsRingWidget(),
             SpectrumBarsWidget(),
-            KPIClusterWidget(),
-            LLMTelemetryWidget(),
-            WorldClocksWidget(),
-            LogStreamWidget(),
-            TaskListWidget(),
-            CompassWidget(),
-            ScheduleStripWidget(),
-            StatusTickerWidget()
+            kpi, llm, clocks, log, tasks, compass, schedule, ticker
         ]
     }
 

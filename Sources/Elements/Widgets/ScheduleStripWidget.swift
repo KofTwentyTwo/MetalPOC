@@ -29,12 +29,17 @@ final class ScheduleStripWidget: HUDElement {
         Event(label: "BRIEF",      remaining: 460, flashing: 0),
     ]
 
+    var revealDelay: Float = 0
+    private var revealStart: Float = -1
+
     private var timeSinceRebuild: Float = 0
     private let rebuildInterval: Float = 0.5  // 2 Hz redraw
     private var lastChangeTime: Float = -999
     private var textTexture: MTLTexture?
 
     func update(context: FrameContext) {
+        if revealStart < 0 { revealStart = context.time + revealDelay }
+        if context.time < revealStart { return }
         for i in events.indices {
             events[i].remaining -= context.deltaTime
             if events[i].remaining <= 0 && events[i].flashing == 0 {

@@ -19,6 +19,9 @@ final class CompassWidget: HUDElement {
 
     private var headingDeg: Float = 27   // bearing in degrees, 0..360
     private var driftRate: Float = 3     // deg/sec average rotation
+    var revealDelay: Float = 0
+    private var revealStart: Float = -1
+
     private var timeSinceUpdate: Float = 0
     private let updateInterval: Float = 0.25  // 4 Hz redraw
     private var lastChangeTime: Float = -999
@@ -27,6 +30,8 @@ final class CompassWidget: HUDElement {
     private var textDirty = true
 
     func update(context: FrameContext) {
+        if revealStart < 0 { revealStart = context.time + revealDelay }
+        if context.time < revealStart { return }
         let drift = driftRate * context.deltaTime + Float.random(in: -0.3...0.3)
         headingDeg = (headingDeg + drift).truncatingRemainder(dividingBy: 360)
         if headingDeg < 0 { headingDeg += 360 }

@@ -34,6 +34,9 @@ final class TaskListWidget: HUDElement {
         Task(title: "Visual acceptance test pass",   status: "PENDING", progress: 0.0),
     ]
 
+    var revealDelay: Float = 0
+    private var revealStart: Float = -1
+
     private var timeSinceFlip: Float = 0
     private let flipInterval: Float = 8.0
     private var lastChangeTime: Float = -999
@@ -41,6 +44,8 @@ final class TaskListWidget: HUDElement {
     private var textDirty = true
 
     func update(context: FrameContext) {
+        if revealStart < 0 { revealStart = context.time + revealDelay }
+        if context.time < revealStart { return }
         timeSinceFlip += context.deltaTime
         if timeSinceFlip >= flipInterval {
             timeSinceFlip = 0

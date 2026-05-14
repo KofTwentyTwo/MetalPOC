@@ -31,6 +31,9 @@ final class KPIClusterWidget: HUDElement {
         KPI(label: "MEM", value: 58, unit: "%"),
         KPI(label: "NET", value: 12, unit: "MB/s"),
     ]
+    var revealDelay: Float = 0
+    private var revealStart: Float = -1
+
     private var timeSinceUpdate: Float = 0
     private let updateInterval: Float = 0.5  // 2 Hz
     private var lastChangeTime: Float = -999
@@ -39,6 +42,8 @@ final class KPIClusterWidget: HUDElement {
     private var textDirty = true
 
     func update(context: FrameContext) {
+        if revealStart < 0 { revealStart = context.time + revealDelay }
+        if context.time < revealStart { return }
         timeSinceUpdate += context.deltaTime
         if timeSinceUpdate >= updateInterval {
             timeSinceUpdate = 0

@@ -32,6 +32,9 @@ final class StatusTickerWidget: HUDElement {
         "POC ACCEPTANCE 8/8 CRITERIA OBSERVABLE"
     ]
     private var currentIndex = 0
+    var revealDelay: Float = 0
+    private var revealStart: Float = -1
+
     private var timeSinceSwap: Float = 0
     private let swapInterval: Float = 4.0
 
@@ -43,6 +46,8 @@ final class StatusTickerWidget: HUDElement {
     private var textTexture: MTLTexture?
 
     func update(context: FrameContext) {
+        if revealStart < 0 { revealStart = context.time + revealDelay }
+        if context.time < revealStart { return }
         timeSinceSwap += context.deltaTime
         scrollPosition += scrollSpeed * context.deltaTime
         if timeSinceSwap >= swapInterval {

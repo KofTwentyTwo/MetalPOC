@@ -50,6 +50,9 @@ final class LogStreamWidget: HUDElement {
     private var lines: [Line] = []
     private let maxLines = 22
 
+    var revealDelay: Float = 0
+    private var revealStart: Float = -1
+
     private var timeSinceLine: Float = 0
     private var nextDelay: Float = 0.4
     private var lastChangeTime: Float = -999
@@ -57,6 +60,8 @@ final class LogStreamWidget: HUDElement {
     private var textDirty = false
 
     func update(context: FrameContext) {
+        if revealStart < 0 { revealStart = context.time + revealDelay }
+        if context.time < revealStart { return }
         timeSinceLine += context.deltaTime
         if timeSinceLine >= nextDelay {
             timeSinceLine = 0

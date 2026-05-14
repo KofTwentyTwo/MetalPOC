@@ -25,6 +25,9 @@ final class LLMTelemetryWidget: HUDElement {
     private let models = ["claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5"]
     private var modelIndex = 0
     private var timeSinceModelSwap: Float = 0
+    var revealDelay: Float = 0
+    private var revealStart: Float = -1
+
     private var timeSinceUpdate: Float = 0
     private let updateInterval: Float = 0.5  // 2 Hz
     private var lastChangeTime: Float = -999
@@ -33,6 +36,8 @@ final class LLMTelemetryWidget: HUDElement {
     private var textDirty = true
 
     func update(context: FrameContext) {
+        if revealStart < 0 { revealStart = context.time + revealDelay }
+        if context.time < revealStart { return }
         timeSinceUpdate += context.deltaTime
         timeSinceModelSwap += context.deltaTime
         if timeSinceUpdate >= updateInterval {
