@@ -121,5 +121,33 @@ fragment float4 widget_fragment(WidgetVertexOut in [[stage_in]],
         alpha = max(alpha, hexMask);
     }
 
+    // -------------------------------------------------------------------------
+    // Header divider line just below the title row (at ~22% from top in uv-space).
+    // uv.y = 0 is bottom, 1 is top; so 0.78 means 22% from the top.
+    // -------------------------------------------------------------------------
+    if (interiorMask > 0.5) {
+        float divY = 0.78;
+        float divThick = 0.005;
+        float divider = smoothstep(divThick, 0.0, abs(in.uv.y - divY)) * 0.7;
+        color += kCyan * divider;
+        alpha = max(alpha, divider);
+
+        // Pulsing LED at top-left corner of widget body
+        float2 ledPos = float2(0.035, 0.91);
+        float ledRadius = 0.012;
+        // Aspect-correct in widget local space
+        float widgetAspect = (u.size.x * u.resolution.x) / (u.size.y * u.resolution.y);
+        float2 ledDelta = (in.uv - ledPos) * float2(widgetAspect, 1.0);
+        float ledD = length(ledDelta);
+        float pulse = 0.4 + 0.6 * (0.5 + 0.5 * sin(u.time * 2.0));
+        float ledMask = smoothstep(ledRadius, ledRadius * 0.5, ledD) * pulse;
+        color += kBrightCyan * ledMask;
+        alpha = max(alpha, ledMask);
+        // Subtle halo around LED
+        float ledHalo = exp(-ledD / (ledRadius * 1.5)) * pulse * 0.4;
+        color += kBrightCyan * ledHalo;
+        alpha = max(alpha, ledHalo);
+    }
+
     return premul(color, alpha);
 }
