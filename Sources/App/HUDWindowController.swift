@@ -53,13 +53,16 @@ final class HUDWindowController: NSWindowController {
             backdrop.state = .active
             backdrop.wantsLayer = true
             backdrop.autoresizingMask = []
-            // Compute chamfer leg in NSView points to match the Metal shader's notchSize:
-            //   notchSize_metal = min(half_x_aspectAdjusted, half_y) * 0.10   (in normalized y units)
-            //   chamferLeg_pts  = notchSize_metal * screen_height_pts
-            // Same value on both x and y because the Metal cut is 45° in pixel space.
+            // Compute chamfer leg in NSView points to match the Metal shader exactly.
+            // The Metal SDF plane `tlPlane = -(px.x + half_.x - notchSize) + (px.y - half_.y + notchSize)`
+            // intersects the edges at distance 2*notchSize from each corner (solve tlPlane=0
+            // on px.y=half_.y → px.x = -half_.x + 2*notchSize; ditto on left edge). So the
+            // chamfer leg in normalized-y units is 2 * notchSize, not 1 * notchSize.
+            //   notchSize_metal = min(half_x_aspectAdjusted, half_y) * 0.10  (normalized y)
+            //   chamferLeg_pts  = 2 * notchSize_metal * screen_height_pts
             let halfXadj = CGFloat(framed.size.x) * aspect * 0.5
             let halfY = CGFloat(framed.size.y) * 0.5
-            let chamferLeg = min(halfXadj, halfY) * 0.10 * sz.height
+            let chamferLeg = 2.0 * min(halfXadj, halfY) * 0.10 * sz.height
             let mask = CAShapeLayer()
             mask.frame = CGRect(origin: .zero, size: widgetRect.size)
             mask.path = HUDWindowController.chamferedRectPath(
