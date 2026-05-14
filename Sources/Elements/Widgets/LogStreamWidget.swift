@@ -14,7 +14,7 @@ final class LogStreamWidget: HUDElement {
         var tint: SIMD4<Float>
         var frameAlpha: Float
         var textAlpha: Float
-        var _pad0: Float = 0
+        var time: Float
         var _pad1: Float = 0
     }
 
@@ -130,7 +130,8 @@ final class LogStreamWidget: HUDElement {
             size: size,
             tint: SIMD4<Float>(1, 1, 1, 1),
             frameAlpha: 0.8,
-            textAlpha: 1.0
+            textAlpha: 1.0,
+            time: context.time
         )
         encoder.setRenderPipelineState(context.pipelines.widget)
         encoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 0)

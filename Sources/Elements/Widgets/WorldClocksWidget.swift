@@ -14,7 +14,7 @@ final class WorldClocksWidget: HUDElement {
         var tint: SIMD4<Float>
         var frameAlpha: Float
         var textAlpha: Float
-        var _pad0: Float = 0
+        var time: Float
         var _pad1: Float = 0
     }
 
@@ -80,7 +80,8 @@ final class WorldClocksWidget: HUDElement {
             size: size,
             tint: SIMD4<Float>(0.20, 0.85, 1.0, 1.0),
             frameAlpha: 0.8,
-            textAlpha: 1.0
+            textAlpha: 1.0,
+            time: context.time
         )
         encoder.setRenderPipelineState(context.pipelines.widget)
         encoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 0)

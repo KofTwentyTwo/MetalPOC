@@ -9,7 +9,7 @@ struct WidgetUniforms {
     float4 tint;            // RGBA tint multiplied with sampled texture
     float frameAlpha;       // 0..1 — how visible the bordering frame is
     float textAlpha;        // 0..1 — how visible the sampled texture is
-    float _pad0;
+    float time;             // elapsed time in seconds (for animation)
     float _pad1;
 };
 
@@ -47,20 +47,62 @@ fragment float4 widget_fragment(WidgetVertexOut in [[stage_in]],
     float3 textColor = sampled.rgb * u.tint.rgb;
     float textAlpha = sampled.a * u.tint.a * u.textAlpha;
 
-    // Aspect-correct frame border using SDF in widget-local pixel space.
+    // Soft cyan glow around text glyphs — adds a halo where glyphs exist.
+    float3 glowContrib = sampled.a * 0.35 * kBrightCyan;
+    float glowAlpha    = sampled.a * 0.35;
+
+    // Composite text + glow.
+    float3 totalTextColor = textColor + glowContrib;
+    float  totalTextAlpha = clamp(textAlpha + glowAlpha, 0.0, 1.0);
+
+    // -------------------------------------------------------------------------
+    // Aspect-correct frame border using SDF in widget-local space.
+    // -------------------------------------------------------------------------
     float aspect = u.resolution.x / u.resolution.y;
     float2 px = (in.uv - 0.5) * float2(u.size.x * aspect, u.size.y);
     float2 half_ = float2(u.size.x * aspect, u.size.y) * 0.5;
-    float dOuter = sdBox(px, half_);
-    float dBorder = abs(dOuter + 0.0008) - 0.0010;
+
+    float dBox = sdBox(px, half_);
+
+    // Chamfer TL and BR corners at 45°.  notchSize = 10% of the smaller half.
+    float notchSize = min(half_.x, half_.y) * 0.10;
+
+    // Top-left chamfer: the corner where px.x ~ -half_.x AND px.y ~ +half_.y
+    // Cut plane: a diagonal line whose normal points into (1, -1) direction
+    // passes through the corner point (-half_.x + notch, half_.y - notch).
+    float tlPlane = -(px.x + half_.x - notchSize) + (px.y - half_.y + notchSize);
+
+    // Bottom-right chamfer: mirror of TL (flip both axes).
+    float brPlane = (px.x - half_.x + notchSize) - (px.y + half_.y - notchSize);
+
+    // Apply chamfer: max() extends the SDF outward at the cut corners,
+    // effectively slicing them off.
+    float dShaped = max(dBox, max(tlPlane, brPlane));
+
+    float dBorder = abs(dShaped + 0.0008) - 0.0010;
 
     float aa = 2.0 / u.resolution.y;
     float frameMask = max(aaEdge(dBorder, aa),
                           softGlow(dBorder, 0.004) * 0.4);
     float3 frameColor = kBrightCyan * frameMask;
-    float frameAlpha = frameMask * u.frameAlpha;
+    float  frameAlpha = frameMask * u.frameAlpha;
 
-    float3 color = textColor + frameColor;
-    float alpha = max(textAlpha, frameAlpha);
+    // -------------------------------------------------------------------------
+    // Animated scanline drift — thin cyan band scrolling down the widget.
+    // in.uv.y: 0 = bottom, 1 = top (Metal NDC y increases upward after vertex).
+    // We want the band to appear inside the widget so clip to interior.
+    // -------------------------------------------------------------------------
+    float interiorMask = 1.0 - step(0.0, dShaped);   // 1 inside, 0 outside
+    float bandY = fract(u.time * 0.08);
+    float dist  = abs(in.uv.y - bandY);
+    float scanIntensity = exp(-pow(dist / 0.012, 2.0)) * 0.18 * interiorMask;
+    float3 scanColor = kBrightCyan * scanIntensity;
+    float  scanAlpha = scanIntensity;
+
+    // -------------------------------------------------------------------------
+    // Final composite.
+    // -------------------------------------------------------------------------
+    float3 color = totalTextColor + frameColor + scanColor;
+    float  alpha = clamp(max(totalTextAlpha, max(frameAlpha, scanAlpha)), 0.0, 1.0);
     return premul(color, alpha);
 }
