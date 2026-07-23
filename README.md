@@ -1,98 +1,93 @@
 # MetalPOC
 
-A proof-of-concept **Jarvis-style transparent heads-up display** rendered entirely in **Apple Metal** on macOS. A central animated orb is surrounded by ten dynamic widgets — system KPIs, LLM telemetry, world clocks, a scrolling log stream, task list, compass, schedule countdowns, status ticker, spectrum analyzer, vitals ring — all updating with live mock data at 60 fps over a frosted-glass blurred backdrop.
+**Jarvis-Style Transparent Metal HUD for macOS**
 
-This is the rendering and architecture spine for an eventual interactive HUD product. The HUD floats over your desktop on every Space, click-through, with a menu-bar item to switch between full / compact (orb-only in the lower-right corner) / hidden modes.
+A proof-of-concept transparent heads-up display rendered entirely in Apple Metal on macOS. A central animated energy orb is surrounded by ten dynamic widgets — system KPIs, LLM telemetry, world clocks, scrolling log stream, task list, compass, schedule countdowns, status ticker, spectrum analyzer, and vitals ring — updating at 60 fps over a frosted-glass blurred backdrop.
 
-## Highlights
+This forms the rendering and shader pipeline architecture powering [Jarvis](https://github.com/KofTwentyTwo/Jarvis). The HUD floats over your desktop on every Space with click-through enabled, featuring a status item menu to switch between Full, Compact, and Hidden modes.
 
-- **All-Metal rendering** — five shader pipelines (orb / ornament / widget / vitals / spectrum) plus a two-pass glitch post-process
-- **CoreText → MTLTexture** text rasterization with sub-pixel scrolling for the marquee
-- **`NSVisualEffectView` per-widget backdrops** clipped to chamfered shapes, with an additional dark tint sublayer so widgets read as dark glass regardless of desktop content
-- **Bundled fonts** — Share Tech Mono (body) + Orbitron (titles)
-- **All tunables centralized** in `Sources/Theme.swift` — palette, layout, font sizes, update intervals, glitch interval, backdrop tint
-- **Frosted-glass corner-chamfered widget frames** with header LED, hex-grid texture, scanline drift, inline bar gauges, sparklines, micro-readouts, reactive frame flash
-- **Three visibility states** — Full HUD (⌘1), Compact orb-only (⌘2), Hidden (⌘3) — controllable via menu-bar status item
+---
 
-## Screenshots
+## Technical Highlights
 
-> Add screenshots to `docs/screenshots/` and link them here.
+- **All-Metal Graphics**: Five specialized shader pipelines (orb, ornament, widget, vitals, spectrum) plus a two-pass post-process RGB-split glitch pipeline.
+- **CoreText to MTLTexture**: Text rasterization with sub-pixel marquee scrolling for live status streaming.
+- **Per-Widget Chamfered Backdrops**: Individual `NSVisualEffectView` layers clipped to chamfered shapes with dark glass tint overlays.
+- **Bundled Typography**: Share Tech Mono (body) and Orbitron (display) bundled under SIL Open Font License.
+- **Centralized Parameterization**: All layout, palette, animation rates, and shader constants centralized in `Sources/Theme.swift`.
+- **Mode Switching**: Full HUD (⌘1), Compact orb-only (⌘2), and Hidden (⌘3) modes via menu-bar item.
 
-## Requirements
+---
 
-- macOS 13.0 or newer (developed on macOS 15+)
-- Xcode 15+ with Metal toolchain
-- Apple Silicon recommended (tested on M-series)
-- [xcodegen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
+## System Requirements
 
-## Build & Run
+- **Operating System**: macOS 13.0 or newer (macOS 15+ recommended)
+- **Graphics & Hardware**: Apple Silicon GPU (M-series required)
+- **Developer Tools**: Xcode 15+ with Metal toolchain & `xcodegen` (`brew install xcodegen`)
+
+---
+
+## Build & Installation
 
 ```bash
+# Clone repository
 git clone https://github.com/KofTwentyTwo/MetalPOC.git
 cd MetalPOC
+
+# Generate Xcode project bundle
 xcodegen generate
-xcodebuild -project MetalPOC.xcodeproj -scheme MetalPOC -configuration Debug build
-open build/Debug/MetalPOC.app
+
+# Build release application bundle
+xcodebuild -project MetalPOC.xcodeproj -scheme MetalPOC -configuration Release build
+
+# Launch HUD application
+open build/Release/MetalPOC.app
 ```
 
-The HUD appears on the main display and registers a `scope` icon in the macOS menu bar. Switch modes from the menu (Full HUD ⌘1, Compact ⌘2, Hide HUD ⌘3, Quit ⌘Q).
+---
 
-## Architecture
+## Architecture Overview
 
-- **Window**: borderless transparent `NSWindow` at `.floating` level, multi-Space (`canJoinAllSpaces`, `stationary`), permanent `ignoresMouseEvents = true` for click-through.
-- **Backdrops**: one `NSVisualEffectView` per widget, frame-clipped to the widget's chamfered shape via `CAShapeLayer.mask`, with a `.hudWindow` blur + `.vibrantDark` appearance + a translucent dark sublayer for Jarvis tint.
-- **Renderer**: `MTKView` covers the window, a `Renderer` (MTKViewDelegate) drives the per-frame loop. Scene is a flat ordered array of `HUDElement`. Element protocol exposes `update(context:)` and `encode(into:context:)`.
-- **Pipelines**: ornament (corner brackets), orb (procedural energy core with rotating rings + halo), widget (textured quad + chamfered frame + scanline + hex grid + LED + flash), vitals (radial gauges), spectrum (32 dancing bars), glitch (post-process RGB-split, fires randomly every 8–12 min).
-- **Text**: `TextRasterizer` (CoreText → `MTLTexture`, BGRA8 premultiplied, with chamfer-aware inset). The `StatusTickerWidget` bypasses the shared rasterizer for sub-pixel `CTLineDraw` rendering each frame.
-- **Mock data**: each widget owns its own state machine. No external integrations.
+- **Window Host**: Borderless transparent `NSWindow` set to `.floating` window level, multi-Space enabled (`canJoinAllSpaces`, `stationary`), with `ignoresMouseEvents = true` for click-through behavior.
+- **Glass Backdrops**: One `NSVisualEffectView` per widget, frame-clipped to chamfered geometry via `CAShapeLayer.mask` with `.hudWindow` blur and `.vibrantDark` appearance.
+- **Renderer Loop**: `MTKViewDelegate` per-frame render pipeline encoding scene elements into `MTLCommandBuffer` command streams.
+- **Shader Pipelines**:
+  - `OrnamentPipeline`: Corner framing brackets.
+  - `OrbPipeline`: Procedural energy core with counter-rotating rings and radial halo.
+  - `WidgetPipeline`: Textured quads with chamfered borders, scanlines, hex grid, and LED indicators.
+  - `VitalsPipeline`: Radial progress ring gauges.
+  - `SpectrumPipeline`: 32-channel audio spectrum visualization.
+  - `GlitchPipeline`: Post-process RGB-split shader firing on randomized intervals.
 
-## Customization
-
-Everything tunable lives in **`Sources/Theme.swift`**:
-
-| Section | What you can change |
-|---|---|
-| `Theme.Palette` | All colors (cyan tints, log/task/schedule text colors, micro-readout tint) |
-| `Theme.Layout` | Per-widget `origin` and `size` (screen-normalized [0..1], bottom-left origin) |
-| `Theme.Font` | Body + title font names, per-role font sizes, loader helpers |
-| `Theme.Tick` | Every update interval, animation rate, log line count, bar count, etc. |
-| `Theme.Reveal` | Staggered boot-up delays per widget |
-| `Theme.Orb` | Radius, compact-mode center + radius |
-| `Theme.Backdrop` | Blur material, vibrant appearance, dark-tint color |
-| `Theme.Glitch` | RGB-split firing interval (min/max seconds) and burst duration |
-
-Edit a value, rebuild, see the effect everywhere it's used.
+---
 
 ## Project Structure
 
 ```
 Sources/
-├── App/                      NSApplication + window + status bar
-├── Render/                   Renderer, Pipelines, FrameContext, HUDElement protocol
+├── App/                      NSApplication host, window setup, and status item
+├── Render/                   Renderer, Metal pipelines, FrameContext, HUDElement protocol
 ├── Elements/
 │   ├── OrbElement.swift
 │   ├── OrnamentElement.swift
-│   └── Widgets/              The 10 widget implementations
-├── Shaders/                  .metal files (orb, ornament, widget, vitals, spectrum, glitch)
-├── Text/                     TextRasterizer (CoreText → MTLTexture)
-├── Resources/Fonts/          Bundled Share Tech Mono + Orbitron
-└── Theme.swift               All tunable parameters
-project.yml                   xcodegen project definition
+│   └── Widgets/              The 10 dynamic widget implementations
+├── Shaders/                  Metal shader files (orb, ornament, widget, vitals, spectrum, glitch)
+├── Text/                     TextRasterizer (CoreText to MTLTexture converter)
+├── Resources/Fonts/          Bundled Share Tech Mono and Orbitron fonts
+└── Theme.swift               Centralized theme constants and layout parameters
 ```
 
-The Xcode project is regenerated from `project.yml`, so `MetalPOC.xcodeproj` is gitignored.
+---
 
-## Tech Stack
+## Tech Stack & Dependencies
 
-Swift 5.9 · AppKit · Metal · MetalKit · CoreText · CoreGraphics · `xcodegen`
+- **Language**: Swift 5.9 / Swift 6.0
+- **Frameworks**: AppKit, Metal, MetalKit, CoreText, CoreGraphics
+- **Project Generator**: XcodeGen (`project.yml`)
 
-## License
+---
 
-[MIT](LICENSE) © James Maes
+## License & Credits
 
-## Acknowledgments
-
-- Fonts bundled under the [SIL Open Font License](Sources/Resources/Fonts/OFL.txt):
-  - [Share Tech Mono](https://fonts.google.com/specimen/Share+Tech+Mono) by Carrois Apostrophe
-  - [Orbitron](https://fonts.google.com/specimen/Orbitron) by Matt McInerney
-- Inspired by the Jarvis / Iron Man cinematic HUD aesthetic.
+- **License**: MIT License. See [LICENSE](LICENSE) for details.
+- **Bundled Fonts**: [Share Tech Mono](https://fonts.google.com/specimen/Share+Tech+Mono) by Carrois Apostrophe and [Orbitron](https://fonts.google.com/specimen/Orbitron) by Matt McInerney (OFL).
